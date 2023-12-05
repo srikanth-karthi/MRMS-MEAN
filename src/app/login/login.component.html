@@ -1,0 +1,218 @@
+<div class="container" style="width: 40%; margin-top: 120px">
+  <ul class="nav nav-pills nav-justified mb-3" id="ex1" role="tablist">
+    <li class="nav-item" role="presentation">
+      <a class="nav-link" [class.active]="activeTab === 'login'" (click)="setActiveTab('login')">Login</a>
+    </li>
+    <li class="nav-item" role="presentation">
+      <a class="nav-link" [class.active]="activeTab === 'register'" (click)="setActiveTab('register')">Register</a>
+    </li>
+  </ul>
+  <!-- Pills navs -->
+
+  <!-- Pills content -->
+  <div class="tab-content">
+    <div class="tab-pane fade show active" id="pills-login" role="tabpanel" aria-labelledby="tab-login"
+      *ngIf="activeTab === 'login'">
+      <form [formGroup]="loginForm" (ngSubmit)="login()">
+        <div class="text-center mb-3">
+          <p>Sign in with:</p>
+          <button type="button" (click)="signupwithfacebook()" class="btn btn-link btn-floating mx-1">
+            <i class="fab fa-facebook-f"></i>
+          </button>
+
+          <button type="button" (click)="signupwithgoogle()" class="btn btn-link btn-floating mx-1">
+            <i class="fab fa-google"></i>
+          </button>
+
+          <button type="button" (click)="signupwithgithub()" class="btn btn-link btn-floating mx-1">
+            <i class="fab fa-github"></i>
+          </button>
+        </div>
+
+        <p class="text-center">or:</p>
+
+        <!-- Email input -->
+   
+        <div class="mb-4">
+          <label class="form-label" for="loginName">Email or username</label>
+          <input type="email" [class.is-invalid]="
+              loginForm.get('email')?.invalid && loginForm.get('email')?.touched
+            " id="loginName" formControlName="email" class="form-control" />
+          <div *ngIf="
+              loginForm.get('email')?.hasError('required') &&
+              loginForm.get('email')?.touched
+            ">
+            <div class="alert alert-danger">Email is required.</div>
+          </div>
+        </div>
+
+        <!-- Password input -->
+        <div class="mb-4">
+          <label class="form-label" for="loginPassword">Password</label>
+
+          <input type="password" [class.is-invalid]="
+              loginForm.get('password')?.invalid &&
+              loginForm.get('password')?.touched
+            " formControlName="password" id="loginPassword" class="form-control" />
+
+          <div *ngIf="
+              loginForm.get('password')?.hasError('required') &&
+              loginForm.get('password')?.touched
+            ">
+            <div class="alert alert-danger">password is required.</div>
+          </div>
+        </div>
+
+        <!-- 2 column grid layout -->
+        <div class="row mb-4">
+          <div class="col-md-6 d-flex justify-content-center">
+            <!-- Checkbox -->
+            <div class="form-check mb-3 mb-md-0">
+              <input class="form-check-input" type="checkbox" value="" id="loginCheck" checked />
+              <label class="form-check-label" for="loginCheck">
+                Remember me
+              </label>
+            </div>
+          </div>
+
+          <div class="col-md-6 d-flex justify-content-center">
+            <!-- Simple link -->
+            <a href="/forgot_password">Forgot password?</a>
+          </div>
+        </div>
+
+        <!-- Submit button -->
+        <button type="submit" [disabled]="!loginForm.valid" class="btn btn-primary btn-block mb-4">
+          Sign in
+        </button>
+
+        <!-- Register buttons -->
+        <div class="text-center">
+          <p>Not a member? <a (click)="setActiveTab('register')">Register</a></p>
+        </div>
+      </form>
+    </div>
+    <div *ngIf="activeTab === 'register'">
+      <form [formGroup]="registrationForm" (ngSubmit)="register()">
+        <div class="text-center mb-3">
+          <p>Sign up with:</p>
+          <button type="button" (click)="signupwithfacebook()" class="btn btn-link btn-floating mx-1">
+            <i class="fab fa-facebook-f"></i>
+          </button>
+
+          <button type="button" (click)="signupwithgoogle()" class="btn btn-link btn-floating mx-1">
+            <i class="fab fa-google"></i>
+          </button>
+
+          <button type="button" (click)="signupwithgithub()" class="btn btn-link btn-floating mx-1">
+            <i class="fab fa-github"></i>
+          </button>
+        </div>
+
+        <p class="text-center">or:</p>
+
+        <!-- Name input -->
+        <div class="mb-4">
+          <label class="form-label" for="registerName">Name</label>
+          <input [class.is-invalid]="
+              registrationForm.get('name')?.invalid &&
+              registrationForm.get('name')?.touched
+            " formControlName="name" type="text" id="registerName" class="form-control" />
+        </div>
+
+        <div *ngIf="
+            registrationForm.get('name')?.hasError('required') &&
+            registrationForm.get('name')?.touched
+          ">
+          <div class="alert alert-danger">Name is required.</div>
+        </div>
+
+        <!-- Email input -->
+        <div class="mb-4">
+          <label class="form-label" for="registerEmail">Email</label>
+          <input [class.is-invalid]="
+              registrationForm.get('email')?.invalid &&
+              registrationForm.get('email')?.touched
+            " formControlName="email" type="email" id="registerEmail" class="form-control" />
+        </div>
+        <div *ngIf="
+            registrationForm.get('email')?.hasError('required') &&
+            registrationForm.get('email')?.touched
+          ">
+          <div class="alert alert-danger">Email is required.</div>
+        </div>
+        <div *ngIf="
+            registrationForm.get('email')?.hasError('invalidEmail') &&
+            registrationForm.get('email')?.touched
+          ">
+          <div class="alert alert-danger">Email is required.</div>
+        </div>
+
+        <!-- Password input -->
+        <div class="mb-4">
+          <label class="form-label" for="registerPassword">Password</label>
+
+          <input [class.is-invalid]="
+              registrationForm.get('password')?.invalid &&
+              registrationForm.get('password')?.touched
+            " type="password" id="registerPassword" formControlName="password" class="form-control" />
+        </div>
+        <div *ngIf="
+            registrationForm.get('password')?.hasError('required') &&
+            registrationForm.get('password')?.touched
+          ">
+          <div class="alert alert-danger">Password is required.</div>
+        </div>
+        <div *ngIf="!hasnumber && registrationForm.get('password')?.touched">
+          <div class="alert alert-danger">
+            Password is must cointain at least one number
+          </div>
+        </div>
+        <div *ngIf="!hasuppercase && registrationForm.get('password')?.touched">
+          <div class="alert alert-danger">
+            Password is must cointain at least one Uppercase
+          </div>
+        </div>
+        <div *ngIf="!haslowercase && registrationForm.get('password')?.touched">
+          <div class="alert alert-danger">
+            Password is must cointain at least one lowercase
+          </div>
+        </div>
+        <div *ngIf="!hasspecialcase && registrationForm.get('password')?.touched">
+          <div class="alert alert-danger">
+            Password is must cointain at least one special character
+          </div>
+        </div>
+        <div *ngIf="!hasEightdigit && registrationForm.get('password')?.touched">
+          <div class="alert alert-danger">
+            Password is must cointain at least 8 character
+          </div>
+        </div>
+
+        <!-- Repeat Password input -->
+
+        <!-- <div class="form-outline mb-4">
+
+                    <label class="form-label" for="registerRepeatPassword">Repeat password</label>
+                    <input [class.is-invalid]="registrationForm.get('repeatPassword')?.invalid && registrationForm.get('repeatPassword')?.touched" type="password" id="registerRepeatPassword"formControlName="repeatPassword" class="form-control" />
+                </div>
+                <div *ngIf="registrationForm.get('repeatPassword')?.hasError('required')  && registrationForm.get('repeatPassword')?.touched">
+                    <div class="alert alert-danger">
+                      Password is required.
+                    </div>
+                  </div>
+
+                <div *ngIf="registrationForm.get('repeatPassword')?.hasError('passwordMismatch')  && registrationForm.get('repeatPassword')?.touched">
+                    <div class="alert alert-danger">
+                      Password does not match.
+                    </div>
+                  </div> -->
+
+        <!-- Submit button -->
+        <button type="submit" [disabled]="!registrationForm.valid" class="btn btn-primary">
+          Sign in
+        </button>
+      </form>
+    </div>
+  </div>
+</div>
