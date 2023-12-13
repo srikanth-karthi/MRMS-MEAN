@@ -18,7 +18,7 @@ const routes: Routes = [
   },
   { path: 'profile', component: ProfileComponent },
   { path: 'forgot_password', component: ForgotComponent }
-  // {path:'/**/',component:DashboardComponent}
+  
 ];
 
 @NgModule({

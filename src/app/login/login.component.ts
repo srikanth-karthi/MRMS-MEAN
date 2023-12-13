@@ -12,6 +12,7 @@ import { ToastrService } from 'ngx-toastr';
 export class LoginComponent {
 
   hasnumber: boolean = false
+  activeTab: string = 'login';
   hasuppercase: boolean = false
   haslowercase: boolean = false
   hasspecialcase: boolean = false
@@ -30,7 +31,6 @@ export class LoginComponent {
     email: ['', Validators.required],
     password: ['', [Validators.required]]
   })
-  activeTab: string = 'login';
 
 
 
@@ -48,9 +48,8 @@ export class LoginComponent {
   }
   login() {
     this.services.login(this.loginForm.value.email, this.loginForm.value.password).subscribe((response) => {
-      console.log(response);
       if (response.data.token) {
-        sessionStorage.setItem('token',response.data.token);
+        sessionStorage.setItem('token', response.data.token);
         this.services.isenabledashboard = true;
         this.router.navigateByUrl('/dashboard');
       } else {
@@ -62,22 +61,20 @@ export class LoginComponent {
       }
     });
   }
-  
+
   register() {
-  
     this.services.register(this.registrationForm.value.name, this.registrationForm.value.email, this.registrationForm.value.password).subscribe((response) => {
-      console.log(response)
-      if ( response.data.token) {
-        sessionStorage.setItem('token',response.data.token);
-    this.services.isenabledashboard = true;
-    this.router.navigateByUrl('/dashboard');
-  } else {
-    this.toastr.error(
-      `${response.data}`,
-      'Error'
-    );
-    return;
-  }
+      if (response.data.token) {
+        sessionStorage.setItem('token', response.data.token);
+        this.services.isenabledashboard = true;
+        this.router.navigateByUrl('/dashboard');
+      } else {
+        this.toastr.error(
+          `${response.data}`,
+          'Error'
+        );
+        return;
+      }
     },)
 
   }
@@ -91,31 +88,23 @@ export class LoginComponent {
   passwordValidator(): ValidatorFn {
     return (control: AbstractControl): { [key: string]: boolean } | null => {
       const password = control.value;
-
-
       const passwordRegex = /^(?=.*[A-Z])(?=.*[a-z])(?=.*[0-9])(?=.*[!@#$%^&*])[A-Za-z0-9!@#$%^&*]{8,}$/;
-
       this.hasEightdigit = password.length > 8 ? true : false;
-
       this.hasnumber = /[0-9]/.test(password);
-      console.log(this.hasnumber)
       this.hasuppercase = /[A-Z]/.test(password);
       this.haslowercase = /[a-z]/.test(password);
       this.hasspecialcase = /[!@#$%^&*]/.test(password);
-
       return passwordRegex.test(password) ? null : { invalidPassword: true };
     };
   }
-
+  
   passwordMatchValidator(): ValidatorFn {
     return (control: AbstractControl): { [key: string]: boolean } | null => {
       const password = control.get('password')?.value;
       const repeatPassword = control.get('repeatPassword')?.value;
-
       if (password !== undefined && repeatPassword !== undefined && password !== repeatPassword) {
         return { passwordMismatch: true };
       }
-
       return null;
     };
   }

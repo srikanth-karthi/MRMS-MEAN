@@ -15,7 +15,6 @@ var verifyToken = function(req, res, next) {
   if (token == null || bearer.toLowerCase() !== 'bearer') {
     return res.status(403).json({ message: 'Invalid token format.' });
   }
-  
 
   jwtdecoder.decodeToken(token)
     .then(function(decoded) {
@@ -23,7 +22,6 @@ var verifyToken = function(req, res, next) {
       next();
     })
     .catch(function(err) {
-      // console.error('Token verification error:', err);
       return res.status(401).json({ message: 'Failed to authenticate token.' });
     });
     

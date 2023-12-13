@@ -1,6 +1,6 @@
 @import "~materialize-css/dist/css/materialize.min.css";
-
 @import url("https://fonts.googleapis.com/icon?family=Material+Icons");
+
 body {
   background-color: #f0f0f0;
   font-size: 13px;
@@ -34,7 +34,7 @@ body {
   font-weight: 500;
 }
 
-/*sidenav*/
+
 .side-nav.floating {
   width: 250px;
   padding: 85px 8px 0 !important;
@@ -111,6 +111,4 @@ side-nav li a:hover {
 }
 .breadcrumb-item {
   cursor: pointer;
-  /* color: black; */
-  /* background-color: white; */
 }

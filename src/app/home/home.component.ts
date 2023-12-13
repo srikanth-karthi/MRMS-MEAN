@@ -7,19 +7,17 @@ import { ServicesService } from '../services.service';
   templateUrl: './home.component.html',
   styleUrls: ['./home.component.css']
 })
-export class HomeComponent  {
-  constructor(private router: Router,private services: ServicesService){}
+export class HomeComponent {
+  constructor(private router: Router, private services: ServicesService) { }
 
-  login()
-  {
+  login() {
     const retrievedData = sessionStorage.getItem('userName');
-if(retrievedData != null)
-{
-  this.services.isenabledashboard = true;
-  this.router.navigateByUrl('/dashboard');
-}else{
-  this.router.navigateByUrl('/login');
-}
+    if (retrievedData != null) {
+      this.services.isenabledashboard = true;
+      this.router.navigateByUrl('/dashboard');
+    } else {
+      this.router.navigateByUrl('/login');
+    }
   }
 }
 

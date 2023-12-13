@@ -34,9 +34,6 @@ body{
 }
 
 
-
-
-/*sidenav*/
 .side-nav.floating{
     width: 250px;
     padding: 85px 8px 0 !important;
@@ -96,8 +93,6 @@ side-nav li a:hover{
     border-radius: 2px;
 }
 
-
-/*folders*/
 .folder{
     width: 185px;
     display: inline-block;
@@ -112,3 +107,5 @@ side-nav li a:hover{
 .navbar{
   padding: 15px 15px 15px 15px ;
 }
+
+  

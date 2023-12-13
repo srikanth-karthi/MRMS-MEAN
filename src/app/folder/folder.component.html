@@ -1,9 +1,7 @@
 
 <div class="main">
   <div class="container-fluid">
-
       <p class="subheader">Folders</p>
-
       <div
         *ngFor="let folder of foldernames"
         class="card-panel folder"
@@ -12,10 +10,17 @@
         <i class="material-icons left">folder</i>{{ folder.name }}
       </div>
     </div>
-
-
-   
-
-
   </div>
+
+<!--   
+  <pdf-viewer src="http://localhost:3000/files/3-1701764296625-Srikanth Resume.pdf"
+  [render-text]="true"
+  [original-size]="false"
+  [show-borders]="true"
+  [stick-to-page]="true"
+  [show-all]="true"
+  [page]="1"
+  style="width: 400px; height: 500px"
+></pdf-viewer> -->
+
 

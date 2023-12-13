@@ -5,6 +5,7 @@ import {
   Renderer2,
   ViewChild,
 } from '@angular/core';
+import { User } from '../model/usermodel';
 import { Router } from '@angular/router';
 import { ServicesService } from '../services.service';
 import { ToastrService } from 'ngx-toastr';
@@ -15,8 +16,22 @@ import { ToastrService } from 'ngx-toastr';
 })
 export class DashboardComponent implements OnInit {
 
+  
+  constructor(
+    private toastr: ToastrService,
+    private service: ServicesService,
+    private router: Router,
+    private el: ElementRef,
+    private renderer: Renderer2
+  ) {}
+
   foldername: string = '';
   selectedFiles: FileList | undefined;
+  showCreateFolderModal: boolean = false;
+  folderName: string = 'New Folder';
+  userName!: string;
+  userImage!: string;
+  userEmail!: string;
   @ViewChild('fileInput') fileInput!: ElementRef;
 
   openFileInput(): void {
@@ -35,147 +50,129 @@ export class DashboardComponent implements OnInit {
     for (let i = 0; i < selectedFiles.length; i++) {
       formData.append('files', selectedFiles[i]);
     }
-    console.log(formData)
+
     this.uploadFiles(formData);
   }
 
   uploadFiles(formData: FormData): void {
-if(this.service.folder.length<1 && this.service.activefolder==null || undefined)
-{
-  this.service.uploadoutsidefolder(formData).subscribe((data: any) => {
-    try{
-      let user = this.service.userjson;
-      for (let i = 0; i < data.data.length; i++) {
-        const file = data.data[i];
-      
-        user.outsideFiles.push(file);
-      }
-      this.service.userjson=user
-    }
-    catch{
+    let user:User = this.service.userjson;
+    if (
+      (this.service.folder.length < 1 && this.service.activefolder == null) ||
+      undefined
+    ) {
+      this.service.uploadoutsidefolder(formData).subscribe((data: any) => {
+        try {
 
-    }
-  })
-}
-else{
-    console.log(this.service.folder)
-    console.log(this.service.activefolder)
-    this.service.uploadFiles(formData).subscribe((data: any) => {
-  try
-  {
-    let user = this.service.userjson;
-  let pathArray = this.service.folder;
-  const headfolder=this.service.activefolder
-  if(headfolder!==pathArray[pathArray.length-1])
-  {
-  console.log(`Folder '${headfolder}' not found`);
-   
-  }
-  let currentFolder = user;
-
-  for (const folderName of pathArray) {
-    const foundFolder = currentFolder.folders.find((folder: { name: any; }) => folder.name === folderName);
-    if (foundFolder) {
-    
-      currentFolder = foundFolder;
+          user.outsideFiles= user.outsideFiles.concat(data.data);
+          this.service.userjson = user;
+          console.log( this.service.userjson)
+        } catch {}
+      });
     } else {
-      console.log(`Folder '${folderName}' not found`);
+      this.service.uploadFiles(formData).subscribe((data: any) => {
+        try {
+          let pathArray = this.service.folder;
+          const headfolder = this.service.activefolder;
+          if (headfolder !== pathArray[pathArray.length - 1]) {
+            
+            console.log(`Folder '${headfolder}' not found`);
+            throw new Error("Some thing went wrong");
+          }
+          let currentFolder:any = user;
+          for (const folderName of pathArray) {
+            const foundFolder = currentFolder.folders.find(
+              (folder: { name: any }) => folder.name === folderName
+            );
+            if (foundFolder) {
+              currentFolder = foundFolder;
+            } else {
+              console.log(`Folder '${folderName}' not found`);
+              throw new Error("Some thing went wrong");
+            }
+          }
+          
+          currentFolder.files= currentFolder.files.concat(data.data);
+          this.service.userjson = user;
+          console.log( this.service.userjson)
+        } catch(error) {
+          
+        }
+      });
     }
   }
-  for (let i = 0; i < data.data.length; i++) {
-    const file = data.data[i];
-    
 
-    currentFolder.files.push(file);
-  }
-  this.service.userjson=user
-  console.log(user)
 
-  }
-  catch
-  {
-    console.log("Rhyreyh")
-  }
-    });
-  }
-  }
-  uploadFolder() {
- 
-  }
-  constructor(
-    private toastr: ToastrService,
-    private service: ServicesService,
-    private router: Router,
-    private el: ElementRef,
-    private renderer: Renderer2
-  ) {}
+  uploadFolder() {}
 
-  showCreateFolderModal: boolean = false;
-  folderName: string = 'New Folder';
+
+
 
   cancelCreateFolder() {
     this.showCreateFolderModal = false;
   }
-alteruserdata()
-{
-  let user = this.service.userjson;
-  let pathArray = this.service.folder;
-  const headfolder=this.service.activefolder
-  if(headfolder!==pathArray[pathArray.length-1])
-{
-console.log(`Folder '${headfolder}' not found`);
- 
-}
-let currentFolder = user.folders;
 
-for (const folderName of pathArray) {
-const foundFolder = currentFolder.find((folder: { name: any; }) => folder.name === folderName);
-if (foundFolder) {
-  currentFolder = foundFolder.folders;
-} else {
-  console.log(`Folder '${folderName}' not found`);
-}
-}
 
-const newFolder = {
-name: this.folderName,
-folders: [],
-files: [],
-};
+  alteruserdata() {
+    
+    let user = this.service.userjson;
+    let pathArray = this.service.folder;
+    const headfolder = this.service.activefolder
+    if (headfolder !== pathArray[pathArray.length - 1]) {
+      console.log(`Folder '${headfolder}' not found`);
+    }
+    let currentFolder = user.folders;
 
-currentFolder.push(newFolder);
-this.service.userjson=user
-console.log(user)
-  
-}
+    for (const folderName of pathArray) {
+      const foundFolder = currentFolder.find(
+        (folder: { name: any }) => folder.name === folderName
+      );
+      if (foundFolder) {
+        currentFolder = foundFolder.folders;
+      } else {
+        console.log(`Folder '${folderName}' not found`);
+    
+      }
+    }
+    const newFolder = {
+      name: this.folderName,
+      folders: [],
+      files: [],
+    };
+    currentFolder.push(newFolder);
+    this.service.userjson = user;
+    console.log( this.service.userjson)
+   
+  }
+
+
   confirmCreateFolder() {
-
-    if (this.service.activefolder != null) {
-
-      this.service.createFolder(this.folderName).subscribe((data: any) => {
-        try
-        {
-        this.alteruserdata()
         this.showCreateFolderModal = false;
-        }
-        catch{
+    if (this.service.activefolder != null) {
+      this.service.createFolder(this.folderName).subscribe((data: any) => {
+        console.log(data)
 
+          if (data.status == 'success') {
+          this.alteruserdata();
+        } else if (data.status == 'samename') {
+          this.toastr.warning(`${data.message}`, 'Warning');
         }
+      
       });
-  
     } else {
       this.service.createafolder(this.folderName).subscribe((data: any) => {
         if (data.status == 'sucess') {
           this.foldername = data.foldername;
-          this.alteruserdata()
+          this.alteruserdata();
         } else if (data.status == 'samename') {
           this.toastr.warning(`${data.message}`, 'Warning');
-          console.log(data);
+       
         }
       });
-      this.showCreateFolderModal = false;
+    
     }
   }
+
+  
   createNewFolder() {
     this.showCreateFolderModal = true;
     console.log('Create New Folder');
@@ -184,12 +181,7 @@ console.log(user)
   uploadFile() {
     console.log('Upload File');
   }
-  userName!: string;
-  userImage!: string;
-  userEmail!: string;
-  userimagepath = 'file:///C:/Users/HP/Desktop/passport/api/profile';
-  latitude!: number;
-  longitude!: number;
+
 
   logout() {
     this.service.logout();

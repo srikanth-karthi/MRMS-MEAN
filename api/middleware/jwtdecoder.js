@@ -1,6 +1,8 @@
 var jwt = require('jsonwebtoken');
-var secretKey = 'your_secret_key';
+require("dotenv").config();
 
+const secretKey = process.env.secretKey
+console.log(secretKey)
 var decodeToken = function(token) {
   if(!token) return 'tokenis required'
   return new Promise(function(resolve, reject) {

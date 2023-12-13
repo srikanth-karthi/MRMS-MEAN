@@ -30,7 +30,7 @@ export class ProfileComponent  implements OnInit{
   onSubmit() {
     if (this.selectedFile) {
       const formData = new FormData();
-      formData.append('file', this.selectedFile); // Change 'image' to 'file'
+      formData.append('file', this.selectedFile); 
       console.log(this.userEmail)
       formData.append('userEmail', this.userEmail);
 
@@ -42,7 +42,7 @@ export class ProfileComponent  implements OnInit{
           this.userImage=response.imageUrl;
         },
         (error: any) => {
-          // Handle errors
+       
           console.error(error);
         }
       );

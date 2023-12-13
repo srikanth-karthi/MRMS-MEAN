@@ -41,7 +41,6 @@
   <div class="container-fluid">
     <div *ngIf="enablefolder">
       <p class="subheader">Folders</p>
-
       <div
         *ngFor="let folder of foldernames"
         class="card-panel folder"
@@ -50,25 +49,19 @@
         <i class="material-icons left">folder</i>{{ folder }}
       </div>
     </div>
-
-
     <nav *ngIf="!enablefolder" aria-label="breadcrumb">
       <ol class="breadcrumb">
         <li class="breadcrumb-item"><a (click)="todashboard()">Home</a></li>
-
-        <li *ngFor="let i of folder"
+        <li *ngFor="let i of folder  let index = index"
         class="breadcrumb-item "
         aria-current="page" class="breadcrumb-item">
-          <a (click)="clikedfolder(i)">{{ i }}</a>
+          <a (click)="clikedfolder(i,index)">{{ i }}</a>
         </li>
-     
       </ol>
     </nav>
-
     <div *ngIf="nullfiles">
       <app-nullfiles></app-nullfiles>
     </div>
-    
     <app-folder *ngIf="!enablefolder" [foldernames]="foldercomponentfoldername" (myEvent)="handleEvent($event)" ></app-folder>
   </div>
 </div>

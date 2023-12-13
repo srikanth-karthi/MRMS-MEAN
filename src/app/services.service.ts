@@ -1,7 +1,8 @@
 import { Injectable } from '@angular/core';
-
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Observable } from 'rxjs';
+import { User} from './model/usermodel';
+
 
 @Injectable({
   providedIn: 'root'
@@ -21,7 +22,7 @@ export class ServicesService {
   isenabledashboard: boolean = false;
 activefolder:any;
 folder:any=[];
-userjson:any;
+userjson!:User;
  
   constructor(private http: HttpClient) {}
 
@@ -40,6 +41,7 @@ userjson:any;
   }
 
   userdata(): Observable<any> {
+   
     const yourToken = sessionStorage.getItem('token');
     const headers = new HttpHeaders().set('Authorization', `Bearer ${yourToken}`);
     return this.http.post(`/api/getprofile`,{}, { headers });
