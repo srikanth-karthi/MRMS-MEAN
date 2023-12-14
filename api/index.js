@@ -48,7 +48,15 @@ app.get(
     failureRedirect: `${process.env.url}/error`,
   })
 );
-
+app.get('/',(req,res)=>
+{
+  res.json(
+    {
+      status: false,
+      message:"unauthorized "
+    }
+  )
+})
 app.use("*",(req,res)=>{
   res.json(
     {

@@ -9,14 +9,16 @@ const fileUploadMiddleware = require('../middleware/fileUploadMiddleware');
 const {uploadfiles,fileupload}=require('../controller/uploadfile');
 const userfiles=require('../controller/userfiles');
 
-
 router.post('/login', loginController.login);
 router.post('/register', loginController.register);
-router.post('/getprofile',verifyToken.verifyToken, profileController.profile); 
-router.put('/profilephoto',verifyToken.verifyToken, profileUpload.single('file'), profileController.profilephoto);
-router.post('/newfolder',verifyToken.verifyToken,addFolderToUser);
-router.post('/uploadfiles/:folderpath/:headfolder',verifyToken.verifyToken,fileUploadMiddleware,uploadfiles)
-router.post('/uploadfiles',verifyToken.verifyToken,fileUploadMiddleware,fileupload)
-router.get('/files',verifyToken.verifyToken,userfiles)
-router.post('/folder',verifyToken.verifyToken,addfolertofolder)
+router.use(verifyToken.verifyToken)
+router.post('/getprofile', profileController.profile); 
+router.put('/profilephoto', profileUpload.single('file'), profileController.profilephoto);
+router.get('/files',userfiles)
+
+router.post('/newfolder',addFolderToUser);
+router.post('/folder',addfolertofolder)
+
+router.post('/uploadfiles/:folderpath/:headfolder',fileUploadMiddleware,uploadfiles)
+router.post('/uploadfiles',fileUploadMiddleware,fileupload)
 module.exports = router;

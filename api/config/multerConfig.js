@@ -10,5 +10,4 @@ var profileStorage = multer.diskStorage({
 });
 
 var profileUpload = multer({ storage: profileStorage });
-
 module.exports = profileUpload;

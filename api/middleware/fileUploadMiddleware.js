@@ -6,12 +6,11 @@ const storage = multer.diskStorage({
   },
   filename: function (req, file, cb) {
     const userId = req.decoded.id;
-    const timestamp = Date.now(); // Get current timestamp
+    const timestamp = Date.now(); 
     const filename = `${userId}-${timestamp}-${file.originalname}`;
     cb(null, filename);
   }
 });
 
 const upload = multer({ storage: storage });
-
 module.exports = upload.array('files');

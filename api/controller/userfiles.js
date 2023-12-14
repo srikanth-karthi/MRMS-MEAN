@@ -10,18 +10,34 @@ const userfiles = async (req, res) => {
     if (!user) {
       return res.status(200).json({ msg: 'Userdata not found' });
     }
-console.log(user)
-    const folderNames = user.folders.map(folder => folder.name);
+    const extractFolderNames = (folders, folderNames = []) => {
+      for (const folder of folders) {
+        folderNames.push(folder.name);
+        if (folder.folders.length > 0) {
+          extractFolderNames(folder.folders, folderNames);
+        }
+      }
+      return folderNames;
+    };
+    
+    const extractFileNames = (folders, fileNames = []) => {
+      for (const folder of folders) {
+        for (const file of folder.files) {
+          fileNames.push(file.fileName);
+        }
+        if (folder.folders.length > 0) {
+          extractFileNames(folder.folders, fileNames);
+        }
+      }
+      return fileNames;
+    };
 
-    const fileNamesInFolders = user.folders.reduce((acc, folder) => {
-      const files = folder.files.map(file => file.fileName);
-  
-      return { ...acc, [folder.name]: files };
-    }, {});
-
-    const outsideFileNames = user.outsideFiles.map(file => file.fileName);
-
-    res.status(200).json({ folderNames, fileNamesInFolders, outsideFileNames,user });
+    const allFolderNames = extractFolderNames(user.folders);
+    const allFileNames = extractFileNames(user.folders);
+    for (const file of user.outsideFiles) {
+      allFileNames.push(file.fileName);
+    }
+    res.status(200).json({ user,allFolderNames,allFileNames });
   } catch (err) {
     console.error('Error fetching folder and file details:', err);
     res.status(500).json({ error: 'Failed to fetch folder and file details' });

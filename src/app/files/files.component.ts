@@ -98,8 +98,9 @@ todashboard() {
       else
       {
       this.service.userjson=data.user;
-     this.outerfiles=data.outsideFileNames
-      this.foldernames=data.folderNames;
+     this.outerfiles=this.service.userjson.outsideFiles
+     this.foldernames= this.service.userjson.folders.map(folder => folder.name);
+
       }
      
     })
