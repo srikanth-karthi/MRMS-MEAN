@@ -102,7 +102,9 @@
         <a (click)="createNewFolder()" class="dropdown-item">Create Folder</a>
       </li>
       <li>
-        <a (click)="uploadFolder()" class="dropdown-item">Upload Folder</a>
+  
+        <input type="file" #fileInput style="display: none" (change)="handleFolderSelect($event)" directory webkitdirectory multiple />
+        <a (click)="openFolderInput()" class="dropdown-item">Upload Folder</a>
       </li>
       <li>
         <input type="file" #fileInput style="display: none" (change)="handleFileInput($event)" multiple />

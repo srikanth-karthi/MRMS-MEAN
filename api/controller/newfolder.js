@@ -1,11 +1,13 @@
-const User = require('../model/Userfile')
+const User = require("../model/Userfile");
 
 const addFolderToUser = async (req, res) => {
   try {
     const folderName = req.body.foldername;
 
     if (!req.decoded || !req.decoded.id) {
-      return res.status(401).json({ message: 'Unauthorized: Missing or invalid token' });
+      return res
+        .status(401)
+        .json({ message: "Unauthorized: Missing or invalid token" });
     }
 
     const userId = req.decoded.id;
@@ -16,25 +18,34 @@ const addFolderToUser = async (req, res) => {
       user = new User({ userId });
     }
 
-    const existingFolder = user.folders.find(folder => folder.name === folderName);
+    const existingFolder = user.folders.find(
+      (folder) => folder.name === folderName
+    );
     if (existingFolder) {
-      console.log('Folder with the same name already exists');
-      return res.status(200).json({ status: 'samename', message: 'Folder with the same name already exists' });
+      console.log("Folder with the same name already exists");
+      return res.status(200).json({
+        status: "samename",
+        message: "Folder with the same name already exists",
+      });
     }
 
-    if (!folderName || folderName.trim() === '') {
-      return res.status(400).json({ message: 'Folder name is required' });
+    if (!folderName || folderName.trim() === "") {
+      return res.status(400).json({ message: "Folder name is required" });
     }
 
     const newFolder = { name: folderName, files: [] };
     user.folders.push(newFolder);
 
     await user.save();
-    console.log('Folder added to user:', folderName);
-    res.status(200).json({ status: 'sucess', message: 'Folder added successfully', foldername: folderName });
+    console.log("Folder added to user:", folderName);
+    res.status(200).json({
+      status: "sucess",
+      message: "Folder added successfully",
+      foldername: folderName,
+    });
   } catch (error) {
-    console.error('Error adding folder to user:', error);
-    res.status(500).json({ message: 'Server error' });
+    console.error("Error adding folder to user:", error);
+    res.status(500).json({ message: "Server error" });
   }
 };
 const addfolertofolder = async (req, res) => {
@@ -47,37 +58,46 @@ const addfolertofolder = async (req, res) => {
     const user = await User.findOne({ userId });
 
     if (!user) {
-      console.log('User not found');
-      return res.status(404).json({ message: 'User not found' });
+      console.log("User not found");
+      return res.status(404).json({ message: "User not found" });
     }
 
-    if (!newFolderName || newFolderName.trim() === '') {
-      return res.status(400).json({ message: 'Folder name is required' });
+    if (!newFolderName || newFolderName.trim() === "") {
+      return res.status(400).json({ message: "Folder name is required" });
     }
     if (headfolder !== pathArray[pathArray.length - 1]) {
       console.log(`Folder '${headfolder}' not found`);
-      return res.status(404).json({ message: `Folder '${headfolder}' not found` });
+      return res
+        .status(404)
+        .json({ message: `Folder '${headfolder}' not found` });
     }
 
     let currentFolder = user.folders;
 
     for (const folderName of pathArray) {
-      const foundFolder = currentFolder.find(folder => folder.name === folderName);
+      const foundFolder = currentFolder.find(
+        (folder) => folder.name === folderName
+      );
       if (foundFolder) {
         currentFolder = foundFolder.folders;
       } else {
         console.log(`Folder '${folderName}' not found`);
-        return res.status(404).json({ message: `Folder '${folderName}' not found` });
+        return res
+          .status(404)
+          .json({ message: `Folder '${folderName}' not found` });
       }
     }
 
-    const existingFolder = currentFolder.find(folder => folder.name === newFolderName);
+    const existingFolder = currentFolder.find(
+      (folder) => folder.name === newFolderName
+    );
     if (existingFolder) {
-      console.log('Folder with the same name already exists');
-      return res.status(200).json({ status: 'samename', message: 'Folder with the same name already exists' });
+      console.log("Folder with the same name already exists");
+      return res.status(200).json({
+        status: "samename",
+        message: "Folder with the same name already exists",
+      });
     }
-
-  
 
     const newFolder = {
       name: newFolderName,
@@ -87,16 +107,62 @@ const addfolertofolder = async (req, res) => {
 
     currentFolder.push(newFolder);
 
-
-    user.markModified('folders');
+    user.markModified("folders");
 
     await user.save();
 
-    console.log(`New folder '${newFolderName}' added to path [${pathArray.join(', ')}]`);
-    res.status(200).json({ status: 'success', message: 'Folder added successfully' });
+    console.log(
+      `New folder '${newFolderName}' added to path [${pathArray.join(", ")}]`
+    );
+    res
+      .status(200)
+      .json({ status: "success", message: "Folder added successfully" });
   } catch (error) {
-    console.error('Error adding folder:', error);
-    res.status(500).json({ message: 'Internal Server Error' });
+    console.error("Error adding folder:", error);
+    res.status(500).json({ message: "Internal Server Error" });
   }
 };
-module.exports = { addFolderToUser, addfolertofolder };
+const uploadfolder = async (req, res) => {
+  try {
+    const foldername = req.params.foldername;
+    const files = req.files;
+    const userId = req.decoded.id;
+    const newFolder = {
+      name: foldername,
+      folders: [],
+      files: [],
+    };
+    let user = await User.findOne({ userId });
+
+    const existingFolder = user.folders.find(
+      (folder) => folder.name === foldername
+    );
+    if (existingFolder) {
+      console.log("Folder with the same name already exists");
+      return res.status(200).json({
+        status: "samename",
+        message: "Folder with the same name already exists",
+      });
+    }
+    for (let i = 0; i < files.length; i++) {
+      const file = files[i];
+      newFolder.files.push({
+        fileName: file.filename,
+        Originalname: file.originalname,
+      });
+    }
+    user.folders.push(newFolder);
+    user.markModified("folders");
+    await user.save();
+
+    res.status(200).json({
+      status: "success",
+      message: "Folder added successfully",
+      data: newFolder,
+    });
+  } catch (error) {
+    console.error("Error adding folder:", error);
+    res.status(500).json({ message: "Internal Server Error" });
+  }
+};
+module.exports = { addFolderToUser, addfolertofolder, uploadfolder };

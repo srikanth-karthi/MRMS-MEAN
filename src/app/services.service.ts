@@ -8,6 +8,11 @@ import { User} from './model/usermodel';
   providedIn: 'root'
 })
 export class ServicesService {
+  uploadFolder(formData: FormData,foldername:string) {
+    const yourToken = sessionStorage.getItem('token');
+    const headers = new HttpHeaders().set('Authorization', `Bearer ${yourToken}`);
+    return this.http.post(`/api/uploadfolder/${foldername}`,formData, { headers });
+  }
   uploadoutsidefolder(formData: FormData) {
     const yourToken = sessionStorage.getItem('token');
     const headers = new HttpHeaders().set('Authorization', `Bearer ${yourToken}`);
@@ -41,7 +46,6 @@ userjson!:User;
   }
 
   userdata(): Observable<any> {
-   
     const yourToken = sessionStorage.getItem('token');
     const headers = new HttpHeaders().set('Authorization', `Bearer ${yourToken}`);
     return this.http.post(`/api/getprofile`,{}, { headers });
@@ -63,14 +67,11 @@ userjson!:User;
     const headers = new HttpHeaders().set('Authorization', `Bearer ${yourToken}`);
     const folderpath = this.folder;
     const headfolder = this.activefolder;
-  
     return this.http.post(`/api/uploadfiles/${folderpath}/${headfolder}`, formData, { headers });
   }
-  
   userfiles()
   {
     const yourToken = sessionStorage.getItem('token');
-    console.log(yourToken)
     const headers = new HttpHeaders().set('Authorization', `Bearer ${yourToken}`);
     return this.http.get(`/api/files`, { headers });
   }
