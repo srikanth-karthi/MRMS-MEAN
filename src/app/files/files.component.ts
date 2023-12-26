@@ -18,7 +18,9 @@ export class FilesComponent implements OnInit{
     foldernames:any=[];
     outerfiles:any=[]
     emptyUser: User = {
-      _id: '',
+
+      Id: '',
+      filesize: 0,
       folders: [],
       outsideFiles: []
     };

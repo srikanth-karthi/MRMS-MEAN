@@ -196,13 +196,9 @@ export class DashboardComponent implements OnInit {
 
         if (data.status == 'success') {
           let currentFolder= this.alteruserdata();
-          const newFolder = {
-            name: this.folderName,
-            folders: [],
-            files: [],
-          };
-          currentFolder.push(newFolder);
-          // this.foldername = this.folderName;
+         
+          currentFolder.push(data.data);
+       
           console.log(this.service.userjson)
         } else if (data.status == 'samename') {
           this.toastr.warning(`${data.message}`, 'Warning');
@@ -212,13 +208,9 @@ export class DashboardComponent implements OnInit {
     } else {
       this.service.createafolder(this.folderName).subscribe((data: any) => {
         if (data.status == 'sucess') {
-          this.foldername = data.foldername;
-          const newFolder = {
-            name: this.folderName,
-            folders: [],
-            files: [],
-          };
-          this.service.userjson.folders.push(newFolder) 
+          this.foldername = this.folderName;
+     
+          this.service.userjson.folders.push(data.data) 
           console.log(this.service.userjson)
         } else if (data.status == 'samename') {
           this.toastr.warning(`${data.message}`, 'Warning');

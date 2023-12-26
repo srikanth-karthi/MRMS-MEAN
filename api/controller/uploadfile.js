@@ -26,7 +26,6 @@ console.log(pathArray,headfolder)
     for (const folderName of pathArray) {
       const foundFolder = currentFolder.folders.find(folder => folder.name === folderName);
       if (foundFolder) {
-      
         currentFolder = foundFolder;
       } else {
         console.log(`Folder '${folderName}' not found`);
@@ -37,8 +36,33 @@ console.log(pathArray,headfolder)
 let output=[];
     for (let i = 0; i < files.length; i++) {
       const file = files[i];
-      output.push({ fileName: file.filename,Originalname:file.originalname})
-      currentFolder.files.push({ fileName: file.filename,Originalname:file.originalname});
+      const date = new Date(); // Current date and time
+    
+      const uploadDate = date.toLocaleString('en-US');
+
+      console.log(uploadDate) // Current date and time of upload
+      const fileSize = file.size; // File size in bytes
+      const fileType = file.mimetype; // MIME type of the file
+      user.filesize=user.filesize+fileSize;
+      output.push({
+        fileName: file.filename,
+        Originalname: file.originalname,
+        uploadDate: uploadDate,
+        fileSize: fileSize,
+        role:'user',
+        uploadername:userId,
+        fileType: fileType
+      });
+
+      currentFolder.files.push({
+        fileName: file.filename,
+        Originalname: file.originalname,
+        uploadDate: uploadDate,
+        fileSize: fileSize,
+        role:'user',
+        uploadername:userId,
+        fileType: fileType
+      })
     }
 
 
@@ -49,7 +73,7 @@ let output=[];
 
     res.status(200).json({ message: 'Files uploaded successfully!',data:output });
   } catch (err) {
-    console.error('Error uploading files:', err);
+    // console.error('Error uploading files:', err);
     res.status(500).json({ error: 'Failed to upload files' });
   }
 };
@@ -62,10 +86,9 @@ const fileupload = async (req, res) => {
     const files = req.files;
 
     const userId = req.decoded.id;
-
-
     const user = await User.findOne({ userId });
-
+    console.log(user)
+console.log(toString(user._id))
     if (!user) {
       return res.status(404).json({ error: 'User not found' });
     }
@@ -73,8 +96,32 @@ const fileupload = async (req, res) => {
 let output=[];
     for (let i = 0; i < files.length; i++) {
       const file = files[i];
-      output.push({ fileName: file.filename,Originalname:file.originalname})
-      user.outsideFiles.push({ fileName: file.filename,Originalname:file.originalname});
+      const date = new Date(); // Current date and time
+
+      const uploadDate = date.toLocaleString('en-US'); // Current date and time of upload
+      const fileSize = file.size; // File size in bytes
+      const fileType = file.mimetype; // MIME type of the file
+      user.filesize=user.filesize+fileSize;
+      output.push({
+        fileName: file.filename,
+        Originalname: file.originalname,
+        uploadDate: uploadDate,
+        fileSize: fileSize,
+        role:'user',
+        uploadername:userId,
+        fileType: fileType
+      });
+
+      user.outsideFiles.push({
+        fileName: file.filename,
+        Originalname: file.originalname,
+        uploadDate: uploadDate,
+        fileSize: fileSize,
+        role:'user',
+        uploadername:userId,
+        fileType: fileType
+      })
+
     }
     await user.save();
     res.status(200).json({ message: 'Files uploaded successfully!',data:output });

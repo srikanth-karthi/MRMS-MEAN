@@ -32,8 +32,8 @@ const addFolderToUser = async (req, res) => {
     if (!folderName || folderName.trim() === "") {
       return res.status(400).json({ message: "Folder name is required" });
     }
-
-    const newFolder = { name: folderName, files: [] };
+    const newFolder = { name: folderName,folders:[], files: [],role:'user', uploadername:userId
+   };
     user.folders.push(newFolder);
 
     await user.save();
@@ -41,7 +41,7 @@ const addFolderToUser = async (req, res) => {
     res.status(200).json({
       status: "sucess",
       message: "Folder added successfully",
-      foldername: folderName,
+     data:newFolder
     });
   } catch (error) {
     console.error("Error adding folder to user:", error);
@@ -103,6 +103,9 @@ const addfolertofolder = async (req, res) => {
       name: newFolderName,
       folders: [],
       files: [],
+      role:'user',
+      uploadername:userId,
+      
     };
 
     currentFolder.push(newFolder);
@@ -116,7 +119,7 @@ const addfolertofolder = async (req, res) => {
     );
     res
       .status(200)
-      .json({ status: "success", message: "Folder added successfully" });
+      .json({ status: "success", message: "Folder added successfully",data:newFolder});
   } catch (error) {
     console.error("Error adding folder:", error);
     res.status(500).json({ message: "Internal Server Error" });
@@ -131,6 +134,8 @@ const uploadfolder = async (req, res) => {
       name: foldername,
       folders: [],
       files: [],
+      role:'user',
+      uploadername:userId
     };
     let user = await User.findOne({ userId });
 
@@ -146,9 +151,20 @@ const uploadfolder = async (req, res) => {
     }
     for (let i = 0; i < files.length; i++) {
       const file = files[i];
+      const date = new Date(); // Current date and time
+
+      const uploadDate = date.toLocaleString('en-US'); // Current date and time of upload
+      const fileSize = file.size; // File size in bytes
+      const fileType = file.mimetype;
+      user.filesize=user.filesize+fileSize; // MIME type of the file
       newFolder.files.push({
         fileName: file.filename,
         Originalname: file.originalname,
+        uploadDate: uploadDate,
+        fileSize: fileSize,
+        role:'user',
+        uploadername:userId,
+        fileType: fileType
       });
     }
     user.folders.push(newFolder);
@@ -198,13 +214,26 @@ console.log(`head Folder '${headfolder}' not found`);
     name: foldername,
     folders: [],
     files: [],
+    role:'user' ,
+    uploadername:userId
   };
   for (let i = 0; i < files.length; i++) {
     const file = files[i];
-    newFolder.files.push({
-      fileName: file.filename,
-      Originalname: file.originalname,
-    });
+    const date = new Date(); // Current date and time
+
+    const uploadDate = date.toLocaleString('en-US'); // Current date and time of upload
+      const fileSize = file.size; // File size in bytes
+      const fileType = file.mimetype;
+      user.filesize=user.filesize+fileSize; // MIME type of the file
+      newFolder.files.push({
+        fileName: file.filename,
+        Originalname: file.originalname,
+        uploadDate: uploadDate,
+        fileSize: fileSize,
+        role:'user',
+        uploadername:userId,
+        fileType: fileType
+      });
   }
   console.log(newFolder)
   currentFolder.folders.push(newFolder);

@@ -9,11 +9,44 @@ const fileSchema = new mongoose.Schema({
     type: String,
     required: true,
   },
+  role: {
+    type: String,
+    enum: ['admin','user', 'hospital'],
+    required: true,
+  },
+  uploadername:
+  {
+    type: String || Number,
+
+    required: true,
+  },
+  fileType: {
+    type: String,
+    required: true,
+  },
+  fileSize: {
+    type: Number,
+    required: true
+  },
+  uploadDate: {
+    type: String,
+    default: ''
+  },
 });
 
 const folderSchema = new mongoose.Schema({
   name: {
     type: String,
+    required: true,
+  },
+  role: {
+    type: String,
+    enum: ['admin', 'user','hospital'],
+    required: true,
+  },
+  uploadername:
+  {
+    type: String || Number,
     required: true,
   },
   folders: [this], // Reference to the same schema type
@@ -23,11 +56,16 @@ const folderSchema = new mongoose.Schema({
   },
 });
 
+
 const UserSchema = new mongoose.Schema({
   userId: {
     type: String,
     required: true,
     unique: true,
+  },
+  filesize:{
+    type: Number,
+    default:0
   },
   folders: [folderSchema],
   outsideFiles: {
@@ -36,6 +74,7 @@ const UserSchema = new mongoose.Schema({
   },
 });
 
+// Define User model
 const User = mongoose.model('User', UserSchema);
 
 module.exports = User;
