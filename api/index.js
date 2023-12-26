@@ -1,6 +1,8 @@
 const express = require("express");
 const passport = require("passport");
 const userRoutes = require('./routes/userroutes');
+const fileroutes = require('./routes/fileroutes');
+const folderroutes = require('./routes/folderroutes');
 const oauth=require('./routes/oauth');
 const session = require("express-session");
 const connectDB = require('./config/mongo');
@@ -20,7 +22,9 @@ app.use(
 connectDB();
 app.use('/images', express.static('profile'));
 app.use('/files', express.static('uploads'));
-app.use('/api',userRoutes);
+app.use('/api/users',userRoutes);
+app.use('/api/files',fileroutes);
+app.use('/api/folder',folderroutes);
 app.use('/oauth',oauth)
 
 app.get(
@@ -48,12 +52,12 @@ app.get(
     failureRedirect: `${process.env.url}/error`,
   })
 );
-app.get('/',(req,res)=>
+app.get('/hi',(req,res)=>
 {
   res.json(
     {
       status: false,
-      message:"unauthorized "
+      message:"good "
     }
   )
 })

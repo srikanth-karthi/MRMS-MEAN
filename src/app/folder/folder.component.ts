@@ -13,7 +13,17 @@ export class FolderComponent  {
 gotofolder(folder:any) {
   this.myEvent.emit(folder);
 }
+showDropdown = false;
 
+toggleOptions() {
+  this.showDropdown = !this.showDropdown;
+}
+
+performAction(action: string) {
+  // Handle actions here based on 'action' parameter
+  console.log(`Performing ${action}`);
+  // Add logic based on the action clicked
+}
 }
 
 

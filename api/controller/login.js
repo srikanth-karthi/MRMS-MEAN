@@ -49,6 +49,7 @@ var loginController = {
   register: async function (req, res) {
     const name = req.body.name;
     const email = req.body.email;
+    console.log(req.body.password)
     const hashedpassword = await bcrypt.hash(req.body.password, 10);
 
     const checkQuery = `SELECT * FROM userdetails WHERE email = ?`;

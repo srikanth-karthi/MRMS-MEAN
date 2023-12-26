@@ -10,12 +10,11 @@ var verifyToken = function(req, res, next) {
   var bearer = tokenArray[0];
   var token = tokenArray[1];
   
-  console.log('Received token:', token); // Log the token for debugging purposes
-  
+  console.log('Received token:', token); 
+
   if (token == null || bearer.toLowerCase() !== 'bearer') {
     return res.status(403).json({ message: 'Invalid token format.' });
   }
-
   jwtdecoder.decodeToken(token)
     .then(function(decoded) {
       req.decoded = decoded;
@@ -24,9 +23,9 @@ var verifyToken = function(req, res, next) {
     .catch(function(err) {
       return res.status(401).json({ message: 'Failed to authenticate token.' });
     });
-    
+
 };
 
-module.exports = {
-  verifyToken: verifyToken
-};
+module.exports = 
+ verifyToken
+

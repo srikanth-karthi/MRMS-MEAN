@@ -112,3 +112,8 @@ side-nav li a:hover {
 .breadcrumb-item {
   cursor: pointer;
 }
+.dot
+{
+ width: 25px;
+ height: 25px;
+}

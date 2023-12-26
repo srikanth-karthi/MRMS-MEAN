@@ -103,7 +103,7 @@
       </li>
       <li>
   
-        <input type="file" #fileInput style="display: none" (change)="handleFolderSelect($event)" directory webkitdirectory multiple />
+        <input type="file" id="folderInput" style="display: none" (change)="handleFolderSelect($event)" directory webkitdirectory multiple />
         <a (click)="openFolderInput()" class="dropdown-item">Upload Folder</a>
       </li>
       <li>

@@ -9,6 +9,7 @@ import { User } from '../model/usermodel';
 import { Router } from '@angular/router';
 import { ServicesService } from '../services.service';
 import { ToastrService } from 'ngx-toastr';
+import { Observable } from 'rxjs';
 @Component({
   selector: 'app-dashboard',
   templateUrl: './dashboard.component.html',
@@ -54,6 +55,12 @@ export class DashboardComponent implements OnInit {
       for (let i = 0; i < this.selectedFiles.length; i++) {
         formData.append('files', this.selectedFiles[i]);
       }
+      if (
+        (this.service.folder.length < 1 && this.service.activefolder == null) ||
+        undefined
+      ) 
+      {
+
       this.service.uploadFolder(formData, this.selectedFolderName).subscribe((data: any) => {
         try {
           if (data.status == 'success') {
@@ -66,7 +73,24 @@ export class DashboardComponent implements OnInit {
         }
         catch { }
       })
+    }
+    else
+    {
+      this.service.uploadFoldertofolder(formData, this.selectedFolderName).subscribe((data: any) => {
+        try {
+          if (data.status == 'success') {
+            console.log(data)
+            let currentFolder= this.alteruserdata();
+            currentFolder.push(data.data)
+            console.log(this.service.userjson)
+          } else if (data.status == 'samename') {
+            this.toastr.warning(`${data.message}`, 'Warning');
+          }
 
+        }
+        catch { }
+      })
+    }
     } else {
       console.warn('No folder selected or no files in the folder.');
     }
@@ -160,24 +184,26 @@ export class DashboardComponent implements OnInit {
 
       }
     }
-    const newFolder = {
-      name: this.folderName,
-      folders: [],
-      files: [],
-    };
-    currentFolder.push(newFolder);
-    this.service.userjson = user;
-    console.log(this.service.userjson)
+    return currentFolder;
+
 
   }
   confirmCreateFolder() {
     this.showCreateFolderModal = false;
+
     if (this.service.activefolder != null) {
-      this.service.createFolder(this.folderName).subscribe((data: any) => {
-        console.log(data)
+      this.service.createFoldertofolder(this.folderName).subscribe((data: any) => {
 
         if (data.status == 'success') {
-          this.alteruserdata();
+          let currentFolder= this.alteruserdata();
+          const newFolder = {
+            name: this.folderName,
+            folders: [],
+            files: [],
+          };
+          currentFolder.push(newFolder);
+          // this.foldername = this.folderName;
+          console.log(this.service.userjson)
         } else if (data.status == 'samename') {
           this.toastr.warning(`${data.message}`, 'Warning');
         }
@@ -187,7 +213,13 @@ export class DashboardComponent implements OnInit {
       this.service.createafolder(this.folderName).subscribe((data: any) => {
         if (data.status == 'sucess') {
           this.foldername = data.foldername;
-          this.alteruserdata();
+          const newFolder = {
+            name: this.folderName,
+            folders: [],
+            files: [],
+          };
+          this.service.userjson.folders.push(newFolder) 
+          console.log(this.service.userjson)
         } else if (data.status == 'samename') {
           this.toastr.warning(`${data.message}`, 'Warning');
 
@@ -206,15 +238,22 @@ export class DashboardComponent implements OnInit {
     this.router.navigateByUrl('/');
   }
   ngOnInit() {
-    this.service.userdata().subscribe((data: any) => {
-      console.log(data);
-      sessionStorage.setItem('userName', data.name);
-      sessionStorage.setItem('userImage', data.profile);
-      sessionStorage.setItem('userEmail', data.email);
-      this.userName = data.name;
-      this.userImage = data.profile;
-      this.userEmail = data.useremail;
-    });
+   this.service.userdata().subscribe(
+  (data: any) => {
+    console.log(data);
+    sessionStorage.setItem('userName', data.name);   
+    sessionStorage.setItem('userImage', data.profile);
+    sessionStorage.setItem('userEmail', data.email);
+    this.userName = data.name;
+    this.userImage = data.profile;
+    this.userEmail = data.useremail;
+  },
+  (error: any) => {
+    console.error('An error occurred:', error.error);
+
+  }
+);
+
     const script = this.renderer.createElement('script');
     script.type = 'text/javascript';
     script.src =

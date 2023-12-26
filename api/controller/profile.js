@@ -20,7 +20,7 @@ const User = require('../model/Userfile')
           const encodedFilename = encodeURIComponent(user.profile);
            user.profile = `http://localhost:3000/images/${encodedFilename}`;
           
-          res.json(user);
+          res.status(200).json(user);
         } else {
           res.json('Error retrieving user data');
         }

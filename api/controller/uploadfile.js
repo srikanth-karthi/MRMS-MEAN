@@ -69,9 +69,6 @@ const fileupload = async (req, res) => {
     if (!user) {
       return res.status(404).json({ error: 'User not found' });
     }
-  
-
-
 
 let output=[];
     for (let i = 0; i < files.length; i++) {
@@ -79,17 +76,23 @@ let output=[];
       output.push({ fileName: file.filename,Originalname:file.originalname})
       user.outsideFiles.push({ fileName: file.filename,Originalname:file.originalname});
     }
-
-
-   
-
     await user.save();
-    
-
     res.status(200).json({ message: 'Files uploaded successfully!',data:output });
   } catch (err) {
     console.error('Error uploading files:', err);
     res.status(500).json({ error: 'Failed to upload files' });
   }
 };
-module.exports = {uploadfiles,fileupload};
+const getfiles = async (req, res) => {
+ 
+  try {
+
+    res.setHeader('Content-Disposition', 'attachment; filename="renamed-file.pdf"');
+  
+    res.status(200).json({ message: 'Files uploaded successfully!',data:output });
+  } catch (err) {
+    console.error('Error uploading files:', err);
+    res.status(500).json({ error: 'Failed to upload files' });
+  }
+};
+module.exports = {uploadfiles,fileupload,getfiles};
