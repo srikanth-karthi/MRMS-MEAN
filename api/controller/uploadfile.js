@@ -1,4 +1,6 @@
 const User = require('../model/Userfile');
+const sanitize = require('sanitize-filename');
+const createFileHash =require('../utils/namefiles')
 
 const uploadfiles = async (req, res) => {
  
@@ -44,9 +46,11 @@ let output=[];
       const fileSize = file.size; // File size in bytes
       const fileType = file.mimetype; // MIME type of the file
       user.filesize=user.filesize+fileSize;
+      const timestamp = Date.now();
       output.push({
         fileName: file.filename,
         Originalname: file.originalname,
+        token:createFileHash(`${userId}-${timestamp}-${sanitize(file.originalname)}`),
         uploadDate: uploadDate,
         fileSize: fileSize,
         role:'user',
@@ -57,6 +61,8 @@ let output=[];
       currentFolder.files.push({
         fileName: file.filename,
         Originalname: file.originalname,
+     
+        token:createFileHash(`${userId}-${timestamp}-${sanitize(file.originalname)}`),
         uploadDate: uploadDate,
         fileSize: fileSize,
         role:'user',
@@ -86,13 +92,11 @@ const fileupload = async (req, res) => {
     const files = req.files;
 
     const userId = req.decoded.id;
-    const user = await User.findOne({ userId });
-    console.log(user)
-console.log(toString(user._id))
-    if (!user) {
-      return res.status(404).json({ error: 'User not found' });
-    }
+    let user = await User.findOne({ userId });
 
+    if (!user) {
+      user = new User({ userId });
+    }
 let output=[];
     for (let i = 0; i < files.length; i++) {
       const file = files[i];
@@ -100,11 +104,15 @@ let output=[];
 
       const uploadDate = date.toLocaleString('en-US'); // Current date and time of upload
       const fileSize = file.size; // File size in bytes
-      const fileType = file.mimetype; // MIME type of the file
+      const fileType = file.mimetype; 
+    
+Token=createFileHash(file.filename,userId),
       user.filesize=user.filesize+fileSize;
       output.push({
         fileName: file.filename,
         Originalname: file.originalname,
+      token:Token,
+
         uploadDate: uploadDate,
         fileSize: fileSize,
         role:'user',
@@ -115,6 +123,8 @@ let output=[];
       user.outsideFiles.push({
         fileName: file.filename,
         Originalname: file.originalname,
+        token:Token,
+
         uploadDate: uploadDate,
         fileSize: fileSize,
         role:'user',

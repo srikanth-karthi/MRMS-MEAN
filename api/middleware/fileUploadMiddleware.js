@@ -1,5 +1,5 @@
 const multer = require('multer');
-
+const sanitize = require('sanitize-filename');
 const storage = multer.diskStorage({
   destination: function (req, file, cb) {
     cb(null, 'uploads/');
@@ -7,7 +7,7 @@ const storage = multer.diskStorage({
   filename: function (req, file, cb) {
     const userId = req.decoded.id;
     const timestamp = Date.now(); 
-    const filename = `${userId}-${timestamp}-${file.originalname}`;
+    const filename = sanitize(`${userId}-${timestamp}-${sanitize(file.originalname)}`);
     cb(null, filename);
   }
 });

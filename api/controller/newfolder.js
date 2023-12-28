@@ -1,5 +1,6 @@
 const User = require("../model/Userfile");
-
+const createFileHash =require('../utils/namefiles')
+const sanitize = require('sanitize-filename');
 const addFolderToUser = async (req, res) => {
   try {
     const folderName = req.body.foldername;
@@ -138,7 +139,9 @@ const uploadfolder = async (req, res) => {
       uploadername:userId
     };
     let user = await User.findOne({ userId });
-
+    if (!user) {
+      user = new User({ userId });
+    }
     const existingFolder = user.folders.find(
       (folder) => folder.name === foldername
     );
@@ -156,10 +159,13 @@ const uploadfolder = async (req, res) => {
       const uploadDate = date.toLocaleString('en-US'); // Current date and time of upload
       const fileSize = file.size; // File size in bytes
       const fileType = file.mimetype;
-      user.filesize=user.filesize+fileSize; // MIME type of the file
+      user.filesize=user.filesize+fileSize;
+      const timestamp = Date.now(); // MIME type of the file
       newFolder.files.push({
         fileName: file.filename,
         Originalname: file.originalname,
+        token:createFileHash(`${userId}-${timestamp}-${sanitize(file.originalname)}`),
+
         uploadDate: uploadDate,
         fileSize: fileSize,
         role:'user',
@@ -190,9 +196,8 @@ console.log(pathArray,headfolder)
   const userId = req.decoded.id;
   const user = await User.findOne({ userId });
   if (!user) {
-    return res.status(404).json({ error: 'User not found' });
+    user = new User({ userId });
   }
-
   if(headfolder!==pathArray[pathArray.length-1])
 {
 console.log(`head Folder '${headfolder}' not found`);
@@ -224,10 +229,14 @@ console.log(`head Folder '${headfolder}' not found`);
     const uploadDate = date.toLocaleString('en-US'); // Current date and time of upload
       const fileSize = file.size; // File size in bytes
       const fileType = file.mimetype;
-      user.filesize=user.filesize+fileSize; // MIME type of the file
+      user.filesize=user.filesize+fileSize; 
+      const timestamp = Date.now(); // MIME type of the file
+      // MIME type of the file
       newFolder.files.push({
         fileName: file.filename,
         Originalname: file.originalname,
+        token:createFileHash(`${userId}-${timestamp}-${sanitize(file.originalname)}`),
+
         uploadDate: uploadDate,
         fileSize: fileSize,
         role:'user',
