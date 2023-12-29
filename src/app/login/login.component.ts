@@ -47,35 +47,54 @@ export class LoginComponent {
     window.location.href = 'http://localhost:3000/api/oauth/github';
   }
   login() {
-    this.services.login(this.loginForm.value.email, this.loginForm.value.password).subscribe((response) => {
+    this.services.login(this.loginForm.value.email, this.loginForm.value.password).subscribe(
+      (response) => {
       if (response.data.token) {
         sessionStorage.setItem('token', response.data.token);
         this.services.isenabledashboard = true;
         this.router.navigateByUrl('/dashboard');
       } else {
         this.toastr.error(
-          `${response.data}`,
+         'Internal sever Error',
           'Error'
         );
         return;
       }
+    },
+    (error)=>
+    {
+      console.log(error.error.error)
+      this.toastr.error(
+        `${error.error.error}`,
+        'Error'
+      );
+      return;
     });
   }
 
   register() {
-    this.services.register(this.registrationForm.value.name, this.registrationForm.value.email, this.registrationForm.value.password).subscribe((response) => {
+    this.services.register(this.registrationForm.value.name, this.registrationForm.value.email, this.registrationForm.value.password).subscribe(     (response) => {
       if (response.data.token) {
         sessionStorage.setItem('token', response.data.token);
         this.services.isenabledashboard = true;
         this.router.navigateByUrl('/dashboard');
       } else {
         this.toastr.error(
-          `${response.data}`,
+         'Internal sever Error',
           'Error'
         );
         return;
       }
-    },)
+    },
+    (error)=>
+    {
+      console.log(error.error.error)
+      this.toastr.error(
+        `${error.error.error}`,
+        'Error'
+      );
+      return;
+    })
 
   }
 

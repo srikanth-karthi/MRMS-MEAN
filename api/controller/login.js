@@ -2,23 +2,24 @@ require("dotenv").config();
 
 const jwt = require('jsonwebtoken');
 const bcrypt = require("bcrypt");
-
+const { signRefreshToken,signAccessToken}=require("../utils/generatetoken")
 const response = require('../handlers/responsejandler')
 var sqldb = require('../config/mysql');
 
-
+const createError = require("http-errors");
 
 
 const secretKey = process.env.secretKey
 
 var loginController = {
-  login: function (req, res) {
+  login: function (req, res,next) {
     const Email = req.body.email;
     const password = req.body.password;
     const query = "SELECT * FROM userdetails WHERE email = ?";
     sqldb.query(query, [Email], (error, results) => {
       if (error) {
         console.error("Error executing the query:", error);
+        next( createError.InternalServerError())
         return;
       }
       if (results.length === 1) {
@@ -26,17 +27,26 @@ var loginController = {
         bcrypt.compare(password, user.password, (bcryptError, isMatch) => {
           if (bcryptError) {
             console.error("Error comparing passwords:", bcryptError);
+            next( createError.InternalServerError())
             return;
           }
           if (isMatch) {
             console.log(user)
 
-            const token = jwt.sign({ id: user.id }, secretKey);
-            console.log(token)
-            response(res, 200, 'login sucess', { 'token': token })
+            const AccessToken = signAccessToken(user.id)
+            const refreshToken=signRefreshToken(user.id)
+            console.log(refreshToken)
+            res.cookie('refreshToken', refreshToken, {
+              maxAge:60 * 10000,
+              httpOnly: true,
+              secure: true,
+              sameSite: 'strict', 
+            });
+            response(res, 200, 'login sucess', { 'token': AccessToken })
 
           } else {
-            response(res, 200, 'login Error', 'Invalid password')
+            next( createError.Unauthorized('Username/password not valid'))
+       
 
           }
         });
@@ -63,7 +73,7 @@ var loginController = {
         const insertQuery = "INSERT INTO userdetails (name, email, password) VALUES (?, ?, ?)";
         const insertValues = [name, email, hashedpassword];
 
-        sqldb.query(insertQuery, insertValues, (insertError) => {
+   sqldb.query(insertQuery, insertValues, (insertError) => {
           if (insertError) {
             throw insertError;
           }
@@ -77,10 +87,18 @@ var loginController = {
             if (selectResults.length === 1) {
               const userId = selectResults[0].id;
               console.log("User added with ID:", userId);
-              const token = jwt.sign({ id: userId }, secretKey);
-              response(res, 200, 'register sucess', { 'token': token })
+              const AccessToken = signAccessToken(userId)
+              const refreshToken=signRefreshToken(userId)
+              console.log(refreshToken)
+              res.cookie('refreshToken', refreshToken, {
+                maxAge:60 * 10000,
+                httpOnly: true,
+                secure: true,
+                sameSite: 'strict', 
+              });
+              response(res, 200, 'login sucess', { 'token': AccessToken })
             } else {
-              res.json('Error retrieving user ID');
+              next( createError.InternalServerError())
             }
           });
         });

@@ -26,6 +26,8 @@
 
     "body-parser": "^1.20.2",
 
+    "cookie-parser": "^1.4.6",
+
     "cors": "^2.8.5",
 
     "crypto": "^1.0.1",
@@ -43,6 +45,8 @@
     "file-type": "^18.7.0",
 
     "fs": "^0.0.1-security",
+
+    "http-errors": "^2.0.0",
 
     "jsonwebtoken": "^9.0.2",
 
@@ -65,6 +69,8 @@
     "passport-twitter": "^1.0.4",
 
     "path": "^0.12.7",
+
+    "redis": "^4.6.12",
 
     "request": "^2.88.2",
 
