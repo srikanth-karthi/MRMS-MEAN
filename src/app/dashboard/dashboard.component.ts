@@ -10,6 +10,7 @@ import { Router } from '@angular/router';
 import { ServicesService } from '../services.service';
 import { ToastrService } from 'ngx-toastr';
 import { Observable } from 'rxjs';
+import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 @Component({
   selector: 'app-dashboard',
   templateUrl: './dashboard.component.html',
@@ -17,6 +18,7 @@ import { Observable } from 'rxjs';
 })
 export class DashboardComponent implements OnInit {
   constructor(
+    private formBuilder: FormBuilder,
     private toastr: ToastrService,
     private service: ServicesService,
     private router: Router,
@@ -24,7 +26,7 @@ export class DashboardComponent implements OnInit {
     private renderer: Renderer2
   ) { }
 
-
+  folderForm!: FormGroup;
   selectedFolderName: string | null = null;
   selectedFiles: FileList | null = null;
   foldername: string = '';
@@ -189,6 +191,10 @@ export class DashboardComponent implements OnInit {
 
   }
   confirmCreateFolder() {
+    if (this.folderForm.valid) {
+      
+    
+    this.folderName=this.folderForm.value.folderName
     this.showCreateFolderModal = false;
 
     if (this.service.activefolder != null) {
@@ -220,9 +226,10 @@ export class DashboardComponent implements OnInit {
 
     }
   }
+  }
   createNewFolder() {
     this.showCreateFolderModal = true;
-    console.log('Create New Folder');
+
   }
   logout() {
     this.service.logout();
@@ -230,6 +237,10 @@ export class DashboardComponent implements OnInit {
     this.router.navigateByUrl('/');
   }
   ngOnInit() {
+    this.folderForm = this.formBuilder.group({
+
+      folderName: ['', [Validators.required, Validators.maxLength(20)]]
+    });
    this.service.userdata().subscribe(
   (data: any) => {
     console.log(data);

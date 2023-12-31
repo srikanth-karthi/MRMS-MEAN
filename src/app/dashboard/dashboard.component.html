@@ -78,16 +78,35 @@
     <i class="fas fa-search"></i>
   </button>
 </div>
-<div *ngIf="showCreateFolderModal" class="modal">
-  <div class="modal-content">
-    <h2>Create Folder</h2>
-    <input type="text" [(ngModel)]="folderName" />
-    <div class="modal-buttons">
-      <button (click)="confirmCreateFolder()">Create</button>
-      <button (click)="cancelCreateFolder()">Cancel</button>
+<form [formGroup]="folderForm" (ngSubmit)="confirmCreateFolder()">
+  <div *ngIf="showCreateFolderModal" class="modal">
+    <div class="modal-content">
+      <h2>Create Folder</h2>
+      <div class="form-group">
+
+        <input type="text" id="folderName" formControlName="folderName" class="form-control" />
+
+        <div *ngIf="
+        folderForm.get('folderName')?.hasError('required') &&
+        folderForm.get('folderName')?.touched
+      ">
+          <div class="alert alert-danger">password is required.</div>
+        </div>
+        <div *ngIf="
+        folderForm.get('folderName')?.hasError('maxlength') &&
+        folderForm.get('folderName')?.touched
+      ">
+          <div class="alert alert-danger"> Folder Name must be less than 20 characters.</div>
+        </div>
+      </div>
+      <div class="modal-buttons">
+        <button  class="btn btn-primary"  type="submit" [disabled]="folderForm.invalid">Create</button>
+        <button class="btn btn-primary"  type="button" (click)="cancelCreateFolder()">Cancel</button>
+      </div>
     </div>
   </div>
-</div>
+</form>
+
 <div class="new">
   <div class="dropdown">
     <a class="text-reset me-3 dropdown-toggle hidden-arrow" id="navbarDropdownMenuLink" role="button"
@@ -102,8 +121,9 @@
         <a (click)="createNewFolder()" class="dropdown-item">Create Folder</a>
       </li>
       <li>
-  
-        <input type="file" id="folderInput" style="display: none" (change)="handleFolderSelect($event)" directory webkitdirectory multiple />
+
+        <input type="file" id="folderInput" style="display: none" (change)="handleFolderSelect($event)" directory
+          webkitdirectory multiple />
         <a (click)="openFolderInput()" class="dropdown-item">Upload Folder</a>
       </li>
       <li>

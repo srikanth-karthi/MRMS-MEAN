@@ -9,6 +9,7 @@ import { User } from '../model/usermodel';
 })
 export class FilesComponent implements OnInit{
   @Input() foldername: any;
+MAX_VISIBLE_BREADCRUMBS: any=2;
   constructor(private service:ServicesService,private router: Router){}
   enablefolder: boolean=true;
   nullfiles:boolean=false

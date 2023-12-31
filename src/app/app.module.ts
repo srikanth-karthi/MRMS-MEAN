@@ -7,7 +7,7 @@ import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { HomeComponent } from './home/home.component';
 import { LoginComponent } from './login/login.component';
-import { HttpClientModule } from '@angular/common/http';
+import { HTTP_INTERCEPTORS, HttpClientModule } from '@angular/common/http';
 import { SocialLoginModule } from '@abacritt/angularx-social-login';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { DashboardComponent } from './dashboard/dashboard.component';
@@ -19,6 +19,8 @@ import { FilesComponent } from './files/files.component';
 import { PdfViewerModule } from 'ng2-pdf-viewer';
 import { FolderComponent } from './folder/folder.component';
 import { NullfilesComponent } from './nullfiles/nullfiles.component';
+import { TokenInterceptor } from './token.interceptor';
+import { ServicesService } from './services.service';
 @NgModule({
   declarations: [
     AppComponent,
@@ -51,7 +53,12 @@ import { NullfilesComponent } from './nullfiles/nullfiles.component';
     }),
 
   ],
-  providers: [],
+  providers: [ServicesService, // Your service
+  {
+    provide: HTTP_INTERCEPTORS,
+    useClass: TokenInterceptor,
+    multi: true,
+  },],
   bootstrap: [AppComponent]
 })
 export class AppModule { }

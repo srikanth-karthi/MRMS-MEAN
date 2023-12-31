@@ -101,6 +101,15 @@ side-nav li a:hover {
   margin: 15px 20px 15px 0;
   font-weight: 500;
 }
+.folder-name {
+
+  font-weight: 500;
+  width:auto !important;;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+ }
+
 
 .folder i {
   color: rgba(0, 0, 0, 0.54);
@@ -109,11 +118,10 @@ side-nav li a:hover {
 .navbar {
   padding: 15px 15px 15px 15px;
 }
-.breadcrumb-item {
-  cursor: pointer;
-}
-.dot
+
+
+/* .dot
 {
  width: 25px;
  height: 25px;
-}
+} */

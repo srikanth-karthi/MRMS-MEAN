@@ -1,18 +1,17 @@
-
 <div class="main">
   <div class="container-fluid">
-      <p class="subheader">Folders</p>
-      <div
-        *ngFor="let folder of foldernames"
-        class="card-panel folder"
-        (click)="gotofolder(folder.name)"
-      >
-        <i class="material-icons left">folder</i>{{ folder.name }}  <img class="dot right" src="assets/three-dots.png">
-      </div>
-    </div>
+
+     <div 
+       *ngFor="let folder of foldernames"
+       class="card-panel folder "
+       (click)="gotofolder(folder.name)"
+     >
+       <i class="material-icons left ">folder</i> <div class="folder-name">{{ folder.name }}</div>
+     </div>
   </div>
+ </div>
 
-
+<!-- 
   <video controls autoplay>
     <source src="http://localhost:3000/files/U2FsdGVkX1%2Bek%2FIZJ%2BiwpDFND2H8LJ2FN%2BLC%2BMr%2FWQuIcVDX5Tig2SlUaRj%2FllTZ93b8%2BvUg7P925E4zxtJzhGaH5a7YA%2FKS6vsaT%2BHHTr12c1A7hO7xZoW0oslcSa44Q2Eymp6fF9TZxSU3bVmRC3w4Mg7xn5xDsfHHnqpoGSoQOgs%2B4%2FW3vY6mrr%2FsEnU4gTzLC5x1zY16NFXwmeLNbQlYRcA2ZFcrWy1TDkGxHaM1cxLiOW8zbT0WfezLVe1nzTS%2BJdolTBpsFXLTjPfwMg%3D%3D" type="video/mp4">
     Your browser does not support the video tag.
@@ -27,6 +26,4 @@
   [show-all]="true"
   [page]="1"
   style="width: 400px; height: 500px"
-></pdf-viewer>
-
-
+></pdf-viewer> -->

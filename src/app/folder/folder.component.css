@@ -1,32 +1,31 @@
 @import '~materialize-css/dist/css/materialize.min.css';
 
-
 @import url('https://fonts.googleapis.com/icon?family=Material+Icons');
 body{
     background-color: #f0f0f0;
     font-size: 13px;
-    display: grid;
 }
 
 .card, .card-panel {
     cursor: pointer;
     padding: 15px 20px;
     box-shadow: 0 1px 4px 0 rgba(0,0,0,0.14);
+    display: flex !important; /* add this */
+    align-items: center; /* add this */
 }
+
 
 .container-fluid{
     padding: 1rem 2.5rem;
     margin: auto;
+    display: flex;
+    flex-wrap: wrap;
 }
 
 .row{
-    margin: 0 -0.75rem;
-}
+    display: flex;
+    flex-wrap: wrap;
 
-.main{
-    position: absolute;
-    width: calc(100%-250px);
-   
 }
 
 .subheader{
@@ -37,9 +36,9 @@ body{
 
 
 .folder{
-    width: 225px;
-    display: inline-block;
+    width: 185px;
     margin: 15px 20px 15px 0;
+    display: inline-block;
     font-weight: 500;
 }
 
@@ -47,9 +46,23 @@ body{
     color: rgba(0, 0, 0, 0.54);
     margin-top: -2px; 
  }
+ .folder-name {
+    font-weight: 500;
+    flex: 1; /* add this */
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+ .folder-name {
 
+    font-weight: 500;
+    width:auto !important;;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+   }
 
-.dot
+/* .dot
 {
  width: 25px;
  height: 25px;
@@ -58,13 +71,11 @@ body{
 .options-container {
     display: flex;
     align-items: center;
-    /* Additional styling for the container */
   }
   
   .dropdown-content {
     display: none;
     position: absolute;
-    /* Position and styling for the dropdown menu */
-    /* ... */
+   
   }
-  
+   */
