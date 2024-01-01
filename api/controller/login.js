@@ -1,15 +1,15 @@
 require("dotenv").config();
 
-const jwt = require('jsonwebtoken');
+
 const bcrypt = require("bcrypt");
 const { signRefreshToken,signAccessToken}=require("../utils/generatetoken")
 const response = require('../handlers/responsejandler')
 var sqldb = require('../config/mysql');
+var verifyRefreshToken=require('../middleware/verifyrefreshtoken')
 
 const createError = require("http-errors");
 
 
-const secretKey = process.env.secretKey
 
 var loginController = {
   login: function (req, res,next) {
@@ -35,7 +35,7 @@ var loginController = {
 
             const AccessToken = signAccessToken(user.id)
             const refreshToken=signRefreshToken(user.id)
-            console.log(refreshToken)
+
             res.cookie('refreshToken', refreshToken, {
               maxAge:60 * 10000,
               httpOnly: true,
@@ -106,8 +106,30 @@ var loginController = {
     });
 
   },
+  refreshToken:  async function(req, res, next) {
+    const refreshToken = req.cookies.refreshToken;
+    console.log('New Refresh Token:', refreshToken);
+    if (!refreshToken) {
+      throw createError.BadRequest('Refresh token not found');
+    }
 
-};
+    const userId = await verifyRefreshToken(refreshToken);
+
+    const AccessToken = signAccessToken(userId);
+    const newRefreshToken = signRefreshToken(userId);
+
+    console.log('New Access Token:', AccessToken);
+    console.log('New Refresh Token:', newRefreshToken);
+    // res.cookie('refreshToken', refreshToken, {
+    //   maxAge:60 * 10000,
+    //   httpOnly: true,
+    //   secure: true,
+    //   sameSite: 'strict', 
+    // });
+    // res.status(200).json( {newToken:AccessToken}) 
+
+}
+}
 
 module.exports = loginController;
 

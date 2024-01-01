@@ -3,8 +3,7 @@ const createFileHash =require('../utils/namefiles')
 const sanitize = require('sanitize-filename');
 const addFolderToUser = async (req, res) => {
   try {
-    const refreshToken = req.cookies;
-    console.log(refreshToken)
+
     const folderName = req.body.foldername;
 
     if (!req.decoded || !req.decoded.id) {

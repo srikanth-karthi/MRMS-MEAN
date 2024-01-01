@@ -8,6 +8,10 @@ import { User } from './model/usermodel';
 })
 
 export class ServicesService {
+  refreshToken() {
+   var a=  this.http.get(`/api/users/refreshtoken`, {});
+  console.log(a)
+return a;  }
   isenabledashboard: boolean = false;
   activefolder: any;
   folder: any = [];

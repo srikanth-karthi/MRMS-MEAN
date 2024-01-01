@@ -8,7 +8,7 @@ const secretKey = process.env.secretKey
 
     const signAccessToken = (userId) => {
         try {
-return  JWT.sign({ id: userId }, secretKey, { expiresIn: '1h' });
+return  JWT.sign({ id: userId }, secretKey, { expiresIn: 10 });
        ;
         } catch (err) {
           console.error(err.message);
@@ -20,12 +20,13 @@ return  JWT.sign({ id: userId }, secretKey, { expiresIn: '1h' });
 
       const signRefreshToken = (userId) => {
         try {
-          const token = JWT.sign({ id: userId }, secretKey, {
-            expiresIn: '1y',
-            issuer: 'pickurpage.com'
+          const token = JWT.sign({  }, secretKey, {
+            expiresIn: '1h',
+            issuer: 'mrms.com',
+            audience: JSON.stringify(userId),
           });
       
-          // Store token in Redis
+
           client.SET(`token:${userId}`, token, 'EX', 365 * 24 * 60 * 60, (err, reply) => {
             if (err) {
               console.error(err.message);

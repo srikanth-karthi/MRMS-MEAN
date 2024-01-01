@@ -8,6 +8,7 @@ const userfiles=require('../controller/userfiles');
 
 router.post('/login', loginController.login);
 router.post('/register', loginController.register);
+router.get('/refreshtoken', loginController.refreshToken);
 
 router.use(verifyToken)
 

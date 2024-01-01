@@ -10,7 +10,7 @@ var verifyToken = function(req, res, next) {
   var bearer = tokenArray[0];
   var token = tokenArray[1];
   
-  console.log('Received token:', token); 
+
 
   if (token == null || bearer.toLowerCase() !== 'bearer') {
     return res.status(403).json({ message: 'Invalid token format.' });
