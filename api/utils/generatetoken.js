@@ -24,15 +24,16 @@ return  JWT.sign({ id: userId }, secretKey, { expiresIn: '1h' });
             expiresIn: '1y',
             issuer: 'pickurpage.com'
           });
-          
-    //   client.SET(userId, token, 'EX', 365 * 24 * 60 * 60, (err, reply) => {
-        //     if (err) {
-        //       console.log(err.message)
-        // createError.InternalServerError()
-        //       return
-        //     }
-        // })
-          
+      
+          // Store token in Redis
+          client.SET(`token:${userId}`, token, 'EX', 365 * 24 * 60 * 60, (err, reply) => {
+            if (err) {
+              console.error(err.message);
+              throw createError.InternalServerError();
+            }
+            console.log('Token stored in Redis:', reply);
+          });
+      
           return token;
         } catch (err) {
           console.error(err.message);

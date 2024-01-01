@@ -23,20 +23,7 @@ app.use(
     saveUninitialized: true,
   })
 );
-// const redis = require('redis');
 
-// const client = redis.createClient({
-//   port: 6379,
-//   host: 'localhost' 
-// });
-
-// client.on('connect', () => {
-//   console.log('Client connected to Redis...');
-// });
-
-// client.on('error', (err) => {
-//   console.error('Error connecting to Redis:', err);
-// });
 
 
 connectDB();

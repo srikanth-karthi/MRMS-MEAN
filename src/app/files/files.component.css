@@ -118,7 +118,18 @@ side-nav li a:hover {
 .navbar {
   padding: 15px 15px 15px 15px;
 }
-
+.breadcrumb{
+  color:black;
+  background-color:white; /* change the background color */
+  border: 0px; /* add a border */
+  box-shadow: null;
+  backdrop-filter:100px; /* add a shadow */
+ }
+ .breadcrumb-item a {
+  color: #495057; 
+  border: null; /* add a border */
+  box-shadow: null; /* change the text color */
+ }
 
 /* .dot
 {

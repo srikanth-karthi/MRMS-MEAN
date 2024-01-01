@@ -51,21 +51,21 @@
     </div>
     <nav *ngIf="!enablefolder" aria-label="breadcrumb">
       <ol class="breadcrumb">
-        <li class="breadcrumb-item"><a  (click)="todashboard()">Home</a></li>
-        <ng-container *ngIf="folder.length <= MAX_VISIBLE_BREADCRUMBS; else showEllipsis">
-          <li *ngFor="let i of folder; let index = index" class="breadcrumb-item custom-breadcrumb" aria-current="page">
-            <a (click)="clikedfolder(i,index)"  > {{ i }}</a>
-          </li>
-        </ng-container>
-        <ng-template #showEllipsis>
-          <li class="breadcrumb-item">...</li>
-          <li *ngFor="let i of folder.slice(folder.length - MAX_VISIBLE_BREADCRUMBS); let index = index" class="breadcrumb-item custom-breadcrumb"
-            aria-current="page">
-            <a (click)="clikedfolder(i,index)">{{ i }}</a>
-          </li>
-        </ng-template>
+         <li class="breadcrumb-item"><a (click)="todashboard()">Home</a></li>
+         <ng-container *ngIf="folder.length <= MAX_VISIBLE_BREADCRUMBS; else showEllipsis">
+           <li *ngFor="let i of folder; let index = index" class="breadcrumb-item custom-breadcrumb" aria-current="page">
+             <a (click)="clikedfolder(i,index)" > {{ i }}</a>
+           </li>
+         </ng-container>
+         <ng-template #showEllipsis>
+           <li class="breadcrumb-item">...</li>
+           <li *ngFor="let i of folder.slice(folder.length - MAX_VISIBLE_BREADCRUMBS); let index = index" class="breadcrumb-item custom-breadcrumb"
+             aria-current="page">
+             <a (click)="clikedfolder(i,index)">{{ i }}</a>
+           </li>
+         </ng-template>
       </ol>
-    </nav>
+     </nav>
     
     
     <div *ngIf="nullfiles">

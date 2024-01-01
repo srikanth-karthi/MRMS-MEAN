@@ -2,6 +2,14 @@
 .navbar{
   padding: 15px 15px 15px 15px ;
 }
+.dropdown 
+{
+  width: 25px !important;
+}
+.new
+{
+  width: 25px !important;
+}
   
   .img-button {
     background-color: #007bff;
