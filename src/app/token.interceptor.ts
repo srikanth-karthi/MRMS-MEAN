@@ -15,6 +15,9 @@ export class TokenInterceptor implements HttpInterceptor {
   constructor(private authService: ServicesService) { }
 
   intercept(request: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
+    if (this.isExcludedUrl(request.url)) {
+      return next.handle(request);
+    }
     const token = sessionStorage.getItem('token');
 
     if (token) {
@@ -25,10 +28,6 @@ export class TokenInterceptor implements HttpInterceptor {
       catchError((error: HttpErrorResponse) => {
         if (error instanceof HttpErrorResponse && error.status === 401 && token) {
           return this.handle401Error(request, next);
-        }
-        if(error instanceof HttpErrorResponse && error.status === 400)
-        {
-          return throwError(() => new Error(error.error.error));
         }
         else
         {
@@ -70,6 +69,13 @@ export class TokenInterceptor implements HttpInterceptor {
         return throwError('Token refresh failed');
       })
     );
+  }
+  private isExcludedUrl(url: string): boolean {
+    // Define URLs that should be excluded from error handling
+    // For example:
+    const excludedUrls = ['/api/users/login', '/api/users/register']; // Replace with your specific URLs
+
+    return excludedUrls.some(excludedUrl => url.includes(excludedUrl));
   }
 
 

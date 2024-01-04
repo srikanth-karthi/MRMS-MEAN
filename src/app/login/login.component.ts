@@ -63,9 +63,9 @@ export class LoginComponent {
     },
     (error)=>
     {
- 
+ console.log(error)
       this.toastr.error(
-        `${error.message}`,
+        `${error.error.error}`,
         'Error'
       );
       return;
@@ -89,7 +89,7 @@ export class LoginComponent {
     (error)=>
     {
       this.toastr.error(
-        `${error.message}`,
+        `${error.error.error}`,
         'Error'
       );
       return;

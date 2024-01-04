@@ -121,23 +121,27 @@ export class DashboardComponent implements OnInit {
       (this.service.folder.length < 1 && this.service.activefolder == null) ||
       undefined
     ) {
-      console.log('Files:', this.selectedFiles);
+    
       this.service.uploadoutsidefolder(formData).subscribe((data: any) => {
-        try {
-
           user.outsideFiles = user.outsideFiles.concat(data.data);
           this.service.userjson = user;
           console.log(this.service.userjson)
-        } catch { }
-      });
+  
+      },
+      (err:any)=>
+      {
+        this.toastr.error(
+          err.message
+         );
+         return;
+      }
+      );
     } else {
       this.service.uploadFiles(formData).subscribe((data: any) => {
         try {
           let pathArray = this.service.folder;
           const headfolder = this.service.activefolder;
           if (headfolder !== pathArray[pathArray.length - 1]) {
-
-            console.log(`Folder '${headfolder}' not found`);
             throw new Error("Some thing went wrong");
           }
           let currentFolder: any = user;
@@ -148,17 +152,26 @@ export class DashboardComponent implements OnInit {
             if (foundFolder) {
               currentFolder = foundFolder;
             } else {
-              console.log(`Folder '${folderName}' not found`);
               throw new Error("Some thing went wrong");
             }
           }
-
           currentFolder.files = currentFolder.files.concat(data.data);
           this.service.userjson = user;
           console.log(this.service.userjson)
-        } catch (error) {
+        } catch (err:any) {
 
+          this.toastr.error(
+            err.message
+           );
+           return;
         }
+      },
+      (err:any)=>
+      {
+        this.toastr.error(
+          err.message
+         );
+         return;
       });
     }
   }

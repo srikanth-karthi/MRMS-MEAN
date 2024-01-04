@@ -1,28 +1,22 @@
 const User = require('../model/Userfile');
-const createfileurl =require('../utils/namefiles')
+const createfileurl = require('../utils/namefiles')
 const path = require("path");
+const createError = require("http-errors");
 const decoder = require("../utils/decodetoken");
-const uploadfiles = async (req, res) => {
- 
+const uploadfiles = async (req, res, next) => {
   try {
     const files = req.files;
     const pathArray = req.params.folderpath.split(',');
     const headfolder = req.params.headfolder;
-console.log(pathArray,headfolder)
     const userId = req.decoded.id;
-
-
     const user = await User.findOne({ userId });
 
-    if (!user) {
-      return res.status(404).json({ error: 'User not found' });
+    if (!user) next(createError.BadGateway('User not found'))
+    
+
+    if (headfolder !== pathArray[pathArray.length - 1]) {
+      next(createError.BadRequest(`Folder '${headfolder}' not found`))
     }
-  
-    if(headfolder!==pathArray[pathArray.length-1])
-{
-  console.log(`head Folder '${headfolder}' not found`);
-        return res.status(404).json({ message: `Folder '${headfolder}' not found` });
-}
     let currentFolder = user;
 
     for (const folderName of pathArray) {
@@ -30,64 +24,46 @@ console.log(pathArray,headfolder)
       if (foundFolder) {
         currentFolder = foundFolder;
       } else {
-        console.log(`Folder '${folderName}' not found`);
-        return res.status(404).json({ message: `Folder '${folderName}' not found` });
+        next(createError.BadRequest(`Folder '${folderName}' not found`))
       }
     }
 
-let output=[];
+    let output = [];
     for (let i = 0; i < files.length; i++) {
-      const file = files[i];
-      const date = new Date(); // Current date and time
-    
-      const uploadDate = date.toLocaleString('en-US');
 
+      const date = new Date();
 
-      const fileSize = file.size; // File size in bytes
-      const fileType = file.mimetype; // MIME type of the file
-      user.filesize=user.filesize+fileSize;
+      let data = {
+        fileName: files[i].filename,
+        Originalname: files[i].originalname,
+        url: createfileurl(files[i].filename, userId),
+        uploadDate: date.toLocaleString('en-US'),
+        fileSize: user.filesize + files[i].size,
+        role: 'user',
+        uploadername: userId,
+        fileType: files[i].mimetype
+      }
+      output.push(data);
 
-
-      output.push({
-        fileName: file.filename,
-        Originalname: file.originalname,
-        url:createfileurl(file.filename,userId),
-        uploadDate: uploadDate,
-        fileSize: fileSize,
-        role:'user',
-        uploadername:userId,
-        fileType: fileType
-      });
-
-      currentFolder.files.push({
-        fileName: file.filename,
-        Originalname: file.originalname,
-        url:createfileurl(file.filename,userId),
-        uploadDate: uploadDate,
-        fileSize: fileSize,
-        role:'user',
-        uploadername:userId,
-        fileType: fileType
-      })
+      currentFolder.files.push( data )
     }
 
 
-   
+
     user.markModified('folders');
     await user.save();
-    
 
-    res.status(200).json({ message: 'Files uploaded successfully!',data:output });
+
+    res.status(200).json({ message: 'Files uploaded successfully!', data: output });
   } catch (err) {
-    // console.error('Error uploading files:', err);
-    res.status(500).json({ error: 'Failed to upload files' });
+    next(createError[500]({ error: 'Failed to upload files' ,err}))
   }
 };
 
 
 
 const fileupload = async (req, res) => {
- 
+
   try {
     const files = req.files;
 
@@ -97,66 +73,51 @@ const fileupload = async (req, res) => {
     if (!user) {
       user = new User({ userId });
     }
-let output=[];
+
+    let output = [];
     for (let i = 0; i < files.length; i++) {
-      const file = files[i];
+
       const date = new Date();
-      const uploadDate = date.toLocaleString('en-US');
-      const fileSize = file.size; 
-      const fileType = file.mimetype; 
-    
 
-      user.filesize=user.filesize+fileSize;
-      output.push({
-        fileName: file.filename,
-        Originalname: file.originalname, 
-        url:createfileurl(file.filename,userId),
-        uploadDate: uploadDate,
-        fileSize: fileSize,
-        role:'user',
-        uploadername:userId,
-        fileType: fileType
-      });
+      let data = {
+        fileName: files[i].filename,
+        Originalname: files[i].originalname,
+        url: createfileurl(files[i].filename, userId),
+        uploadDate: date.toLocaleString('en-US'),
+        fileSize: user.filesize + files[i].size,
+        role: 'user',
+        uploadername: userId,
+        fileType: files[i].mimetype
+      }
+      console.log(data)
+      output.push(data);
 
-      user.outsideFiles.push({
-        fileName: file.filename,
-        Originalname: file.originalname,
-        url:createfileurl(file.filename,userId),
-
-        uploadDate: uploadDate,
-        fileSize: fileSize,
-        role:'user',
-        uploadername:userId,
-        fileType: fileType
-      })
-
+      user.outsideFiles.push( data )
     }
     await user.save();
-    res.status(200).json({ message: 'Files uploaded successfully!',data:output });
+    res.status(200).json({ message: 'Files uploaded successfully!', data: output });
   } catch (err) {
-    console.error('Error uploading files:', err);
-    res.status(500).json({ error: 'Failed to upload files' });
+    next(createError[500]({ error: 'Failed to upload files' ,err}))
   }
 };
-const getfiles = async (req, res) => {
+const getfiles = async (req, res,next ) => {
   try {
     const token = req.params.token;
-    console.log(token);
+    if(!token) next(createError[400]('Invalid token format'))
 
     const decodedToken = decoder(token);
-    
+
     if (Array.isArray(decodedToken) && decodedToken.length > 0 && decodedToken[0].filename) {
       const filename = decodedToken[0].filename;
       const filePath = path.join(__dirname, '..', 'uploads', filename);
-      
+
       res.sendFile(filePath);
     } else {
-      throw new Error('Invalid token format or missing filename');
+      next(createError.BadGateway('Invalid token format or missing filename'))
     }
   } catch (err) {
-    console.error('Error retrieving files:', err);
-    res.status(500).json({ error: 'Failed to retrieve files' });
+    next(createError[500]('Failed to retrieve files'))
   }
 };
 
-module.exports = {uploadfiles,fileupload,getfiles};
+module.exports = { uploadfiles, fileupload, getfiles };

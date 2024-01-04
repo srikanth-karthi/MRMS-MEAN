@@ -1,5 +1,4 @@
 require("dotenv").config();
-const redisClient = require('../config/redis')
 
 const bcrypt = require("bcrypt");
 const { signRefreshToken,signAccessToken}=require("../utils/generatetoken")
@@ -18,14 +17,14 @@ var loginController = {
     const query = "SELECT * FROM userdetails WHERE email = ?";
     sqldb.query(query, [Email], (error, results) => {
       if (error) {
-        next( createError.InternalServerError(error))
+        next( createError.BadRequest(error))
         return;
       }
       if (results.length === 1) {
         const user = results[0];
         bcrypt.compare(password, user.password, (bcryptError, isMatch) => {
           if (bcryptError) {
-            next( createError.InternalServerError(bcryptError))
+            next( createError.FailedDependency(bcryptError))
             return;
           }
           if (isMatch) {
@@ -63,25 +62,23 @@ var loginController = {
 
     const checkQuery = `SELECT * FROM userdetails WHERE email = ?`;
     sqldb.query(checkQuery, [email], (error, results) => {
-      if (error) {
-        next( createError.InternalServerError(error))
-      }
-      if (results.length > 0) {
-        next( createError[400]('Email already uesd'))
-      } else {
+      if (error) next( createError.BadRequest(error))
+  
+      if (results.length > 0) next( createError[400]('Email already uesd'))
+       else 
+      {
         const insertQuery = "INSERT INTO userdetails (name, email, password) VALUES (?, ?, ?)";
         const insertValues = [name, email, hashedpassword];
 
    sqldb.query(insertQuery, insertValues, (Error) => {
-          if (Error) {
-            next( createError.InternalServerError(Error))
-          }
+          if (Error) next( createError.BadRequest(Error))
+          
 
           const selectUserQuery = "SELECT id FROM userdetails WHERE email = ?";
           sqldb.query(selectUserQuery, [email], (selectError, selectResults) => {
-            if (selectError) {
-              next( createError.InternalServerError(selectError))
-            }
+            if (selectError) 
+              next( createError.BadRequest(selectError))
+            
 
             if (selectResults.length === 1) {
               const userId = selectResults[0].id;
@@ -96,9 +93,9 @@ var loginController = {
                 sameSite: 'strict', 
               });
               response(res, 200, 'login sucess', { 'token': AccessToken })
-            } else {
+            } else 
               next( createError.InternalServerError())
-            }
+            
           });
         });
       }
@@ -109,15 +106,14 @@ refreshToken: async function(req, res, next) {
   const refreshToken = req.cookies.refreshToken;
   console.log(refreshToken);
 
-  if (!refreshToken) {
-    next( createError.BadRequest('Refresh token not found'))
-  }
+  if (!refreshToken) next( createError.BadRequest('Refresh token not found'))
+  
 
   try {
     var userId = await verifyRefreshToken(refreshToken);
-    if (!userId) {
+    if (!userId) 
       next( createError.InternalServerError('user id not found'))
-    }
+    
 
     const AccessToken = signAccessToken(userId);
     const newRefreshToken = signRefreshToken(userId);
