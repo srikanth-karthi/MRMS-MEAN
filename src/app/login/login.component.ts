@@ -1,7 +1,7 @@
 import { Component } from '@angular/core';
 import { AbstractControl, FormBuilder, ValidatorFn, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
-import { ServicesService } from '../services.service';
+import { AuthServiceService } from '../auth-service.service';
 import { ToastrService } from 'ngx-toastr';
 
 @Component({
@@ -18,7 +18,7 @@ export class LoginComponent {
   hasspecialcase: boolean = false
   hasEightdigit: boolean = false
 
-  constructor(private toastr: ToastrService, private router: Router, private fb: FormBuilder, private services: ServicesService) { }
+  constructor(private toastr: ToastrService, private router: Router, private fb: FormBuilder, private services: AuthServiceService) { }
 
   registrationForm = this.fb.group({
     name: ['', Validators.required],
@@ -63,9 +63,9 @@ export class LoginComponent {
     },
     (error)=>
     {
-      console.log(error.error.error)
+ 
       this.toastr.error(
-        `${error.error.error}`,
+        `${error.message}`,
         'Error'
       );
       return;
@@ -80,7 +80,7 @@ export class LoginComponent {
         this.router.navigateByUrl('/dashboard');
       } else {
         this.toastr.error(
-         'Internal sever Error',
+         'Internal server Error',
           'Error'
         );
         return;
@@ -88,9 +88,8 @@ export class LoginComponent {
     },
     (error)=>
     {
-      console.log(error.error.error)
       this.toastr.error(
-        `${error.error.error}`,
+        `${error.message}`,
         'Error'
       );
       return;

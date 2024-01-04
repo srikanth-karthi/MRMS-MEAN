@@ -5,15 +5,19 @@ const client = redis.createClient();
 	await client.connect(); 
 })(); 
 
-console.log("Connecting to the Redis"); 
 
 client.on("ready", () => { 
-	console.log("Connected!"); 
+	console.log(" Redis Connected!"); 
 }); 
 
 client.on("error", (err) => { 
 	console.log("Error in the Connection"); 
 }); 
 
-
+process.on('SIGINT', async () => {
+	await client.close()
+	console.log('Error connection closed');
+	process.exit(0)
+  })
+  
 module.exports = client

@@ -1,7 +1,7 @@
 const User = require('../model/Userfile');
-const sanitize = require('sanitize-filename');
-const createFileHash =require('../utils/namefiles')
-
+const createfileurl =require('../utils/namefiles')
+const path = require("path");
+const decoder = require("../utils/decodetoken");
 const uploadfiles = async (req, res) => {
  
   try {
@@ -42,15 +42,16 @@ let output=[];
     
       const uploadDate = date.toLocaleString('en-US');
 
-      console.log(uploadDate) // Current date and time of upload
+
       const fileSize = file.size; // File size in bytes
       const fileType = file.mimetype; // MIME type of the file
       user.filesize=user.filesize+fileSize;
-      const timestamp = Date.now();
+
+
       output.push({
         fileName: file.filename,
         Originalname: file.originalname,
-        token:createFileHash(`${userId}-${timestamp}-${sanitize(file.originalname)}`),
+        url:createfileurl(file.filename,userId),
         uploadDate: uploadDate,
         fileSize: fileSize,
         role:'user',
@@ -61,8 +62,7 @@ let output=[];
       currentFolder.files.push({
         fileName: file.filename,
         Originalname: file.originalname,
-     
-        token:createFileHash(`${userId}-${timestamp}-${sanitize(file.originalname)}`),
+        url:createfileurl(file.filename,userId),
         uploadDate: uploadDate,
         fileSize: fileSize,
         role:'user',
@@ -100,19 +100,17 @@ const fileupload = async (req, res) => {
 let output=[];
     for (let i = 0; i < files.length; i++) {
       const file = files[i];
-      const date = new Date(); // Current date and time
-
-      const uploadDate = date.toLocaleString('en-US'); // Current date and time of upload
-      const fileSize = file.size; // File size in bytes
+      const date = new Date();
+      const uploadDate = date.toLocaleString('en-US');
+      const fileSize = file.size; 
       const fileType = file.mimetype; 
     
-Token=createFileHash(file.filename,userId),
+
       user.filesize=user.filesize+fileSize;
       output.push({
         fileName: file.filename,
-        Originalname: file.originalname,
-      token:Token,
-
+        Originalname: file.originalname, 
+        url:createfileurl(file.filename,userId),
         uploadDate: uploadDate,
         fileSize: fileSize,
         role:'user',
@@ -123,7 +121,7 @@ Token=createFileHash(file.filename,userId),
       user.outsideFiles.push({
         fileName: file.filename,
         Originalname: file.originalname,
-        token:Token,
+        url:createfileurl(file.filename,userId),
 
         uploadDate: uploadDate,
         fileSize: fileSize,
@@ -141,15 +139,24 @@ Token=createFileHash(file.filename,userId),
   }
 };
 const getfiles = async (req, res) => {
- 
   try {
+    const token = req.params.token;
+    console.log(token);
 
-    res.setHeader('Content-Disposition', 'attachment; filename="renamed-file.pdf"');
-  
-    res.status(200).json({ message: 'Files uploaded successfully!',data:output });
+    const decodedToken = decoder(token);
+    
+    if (Array.isArray(decodedToken) && decodedToken.length > 0 && decodedToken[0].filename) {
+      const filename = decodedToken[0].filename;
+      const filePath = path.join(__dirname, '..', 'uploads', filename);
+      
+      res.sendFile(filePath);
+    } else {
+      throw new Error('Invalid token format or missing filename');
+    }
   } catch (err) {
-    console.error('Error uploading files:', err);
-    res.status(500).json({ error: 'Failed to upload files' });
+    console.error('Error retrieving files:', err);
+    res.status(500).json({ error: 'Failed to retrieve files' });
   }
 };
+
 module.exports = {uploadfiles,fileupload,getfiles};

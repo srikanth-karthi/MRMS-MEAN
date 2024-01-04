@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const verifyToken = require('../middleware/verifytoken'); 
-const loginController = require('../controller/login');
+const loginController = require('../controller/Auth');
 const profileController = require('../controller/profile');
 var profileUpload = require('../config/multerConfig');
 const userfiles=require('../controller/userfiles');

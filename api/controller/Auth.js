@@ -1,5 +1,5 @@
 require("dotenv").config();
-
+const redisClient = require('../config/redis')
 
 const bcrypt = require("bcrypt");
 const { signRefreshToken,signAccessToken}=require("../utils/generatetoken")
@@ -18,16 +18,14 @@ var loginController = {
     const query = "SELECT * FROM userdetails WHERE email = ?";
     sqldb.query(query, [Email], (error, results) => {
       if (error) {
-        console.error("Error executing the query:", error);
-        next( createError.InternalServerError())
+        next( createError.InternalServerError(error))
         return;
       }
       if (results.length === 1) {
         const user = results[0];
         bcrypt.compare(password, user.password, (bcryptError, isMatch) => {
           if (bcryptError) {
-            console.error("Error comparing passwords:", bcryptError);
-            next( createError.InternalServerError())
+            next( createError.InternalServerError(bcryptError))
             return;
           }
           if (isMatch) {
@@ -37,7 +35,7 @@ var loginController = {
             const refreshToken=signRefreshToken(user.id)
 
             res.cookie('refreshToken', refreshToken, {
-              maxAge:60 * 10000,
+              maxAge:6000 * 10000,
               httpOnly: true,
               secure: true,
               sameSite: 'strict', 
@@ -45,18 +43,19 @@ var loginController = {
             response(res, 200, 'login sucess', { 'token': AccessToken })
 
           } else {
-            next( createError.Unauthorized('Username/password not valid'))
+            next( createError[400]('Password not valid'))
        
 
           }
         });
       } else {
-        response(res, 200, 'login Error', 'Invalid Email')
+        next( createError[400]('Username not valid'))
+
       }
     })
 
   },
-  register: async function (req, res) {
+  register: async function (req, res,next) {
     const name = req.body.name;
     const email = req.body.email;
     console.log(req.body.password)
@@ -65,23 +64,23 @@ var loginController = {
     const checkQuery = `SELECT * FROM userdetails WHERE email = ?`;
     sqldb.query(checkQuery, [email], (error, results) => {
       if (error) {
-        throw error;
+        next( createError.InternalServerError(error))
       }
       if (results.length > 0) {
-        response(res, 200, 'register error', 'Email already registered')
+        next( createError[400]('Email already uesd'))
       } else {
         const insertQuery = "INSERT INTO userdetails (name, email, password) VALUES (?, ?, ?)";
         const insertValues = [name, email, hashedpassword];
 
-   sqldb.query(insertQuery, insertValues, (insertError) => {
-          if (insertError) {
-            throw insertError;
+   sqldb.query(insertQuery, insertValues, (Error) => {
+          if (Error) {
+            next( createError.InternalServerError(Error))
           }
 
           const selectUserQuery = "SELECT id FROM userdetails WHERE email = ?";
           sqldb.query(selectUserQuery, [email], (selectError, selectResults) => {
             if (selectError) {
-              throw selectError;
+              next( createError.InternalServerError(selectError))
             }
 
             if (selectResults.length === 1) {
@@ -89,7 +88,7 @@ var loginController = {
               console.log("User added with ID:", userId);
               const AccessToken = signAccessToken(userId)
               const refreshToken=signRefreshToken(userId)
-              console.log(refreshToken)
+        
               res.cookie('refreshToken', refreshToken, {
                 maxAge:60 * 10000,
                 httpOnly: true,
@@ -106,29 +105,39 @@ var loginController = {
     });
 
   },
-  refreshToken:  async function(req, res, next) {
-    const refreshToken = req.cookies.refreshToken;
-    console.log('New Refresh Token:', refreshToken);
-    if (!refreshToken) {
-      throw createError.BadRequest('Refresh token not found');
-    }
+refreshToken: async function(req, res, next) {
+  const refreshToken = req.cookies.refreshToken;
+  console.log(refreshToken);
 
-    const userId = await verifyRefreshToken(refreshToken);
+  if (!refreshToken) {
+    next( createError.BadRequest('Refresh token not found'))
+  }
+
+  try {
+    var userId = await verifyRefreshToken(refreshToken);
+    if (!userId) {
+      next( createError.InternalServerError('user id not found'))
+    }
 
     const AccessToken = signAccessToken(userId);
     const newRefreshToken = signRefreshToken(userId);
 
     console.log('New Access Token:', AccessToken);
     console.log('New Refresh Token:', newRefreshToken);
-    // res.cookie('refreshToken', refreshToken, {
-    //   maxAge:60 * 10000,
-    //   httpOnly: true,
-    //   secure: true,
-    //   sameSite: 'strict', 
-    // });
-    // res.status(200).json( {newToken:AccessToken}) 
+    
+    res.cookie('refreshToken', newRefreshToken, {
+      maxAge: 600 * 10000,
+      httpOnly: true,
+      secure: true,
+      sameSite: 'strict',
+    });
 
+    res.status(200).json({ newToken: AccessToken });
+  } catch (error) {
+    next( createError.InternalServerError(error))
+  }
 }
+
 }
 
 module.exports = loginController;

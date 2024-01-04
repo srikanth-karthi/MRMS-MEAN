@@ -8,7 +8,7 @@ const secretKey = process.env.secretKey
 
     const signAccessToken = (userId) => {
         try {
-return  JWT.sign({ id: userId }, secretKey, { expiresIn: 10 });
+return  JWT.sign({ id: userId }, secretKey, { expiresIn: '1h' });
        ;
         } catch (err) {
           console.error(err.message);

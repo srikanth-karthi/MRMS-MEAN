@@ -67,15 +67,15 @@ app.use((err, req, res, next) => {
   res.status(err.status || 500).json({status:err.status , error: err.message || 'Internal Server Error' });
 });
 
-const decoder = require("./utils/decodetoken");
-const path = require("path");
-app.get("/files/:token", (req, res) => {
-  const token = req.params.token;
-  decoder(token);
-  filename = decoder(token)[0].filename;
-  const filePath = path.join(__dirname, "uploads", filename);
-  res.sendFile(filePath);
-});
+// const decoder = require("./utils/decodetoken");
+// const path = require("path");
+// app.get("/files/:token", (req, res) => {
+//   const token = req.params.token;
+//   decoder(token);
+//   filename = decoder(token)[0].filename;
+//   const filePath = path.join(__dirname, "uploads", filename);
+//   res.sendFile(filePath);
+// });
 
 app.use("*", (req, res) => {
   res.json({
@@ -84,6 +84,6 @@ app.use("*", (req, res) => {
   });
 });
 
-app.listen(3000, () => {
-  console.log("Server started on http://localhost:3000");
+app.listen(`${process.env.port}`, () => {
+  console.log(`Server started on ${process.env.bacendurl}`);
 });

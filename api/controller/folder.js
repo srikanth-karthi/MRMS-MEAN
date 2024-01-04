@@ -1,5 +1,5 @@
 const User = require("../model/Userfile");
-const createFileHash =require('../utils/namefiles')
+const createfileurl =require('../utils/namefiles')
 const sanitize = require('sanitize-filename');
 const addFolderToUser = async (req, res) => {
   try {
@@ -165,7 +165,7 @@ const uploadfolder = async (req, res) => {
       newFolder.files.push({
         fileName: file.filename,
         Originalname: file.originalname,
-        token:createFileHash(`${userId}-${timestamp}-${sanitize(file.originalname)}`),
+        url:createfileurl(file.filename,userId),
 
         uploadDate: uploadDate,
         fileSize: fileSize,
@@ -236,7 +236,7 @@ console.log(`head Folder '${headfolder}' not found`);
       newFolder.files.push({
         fileName: file.filename,
         Originalname: file.originalname,
-        token:createFileHash(`${userId}-${timestamp}-${sanitize(file.originalname)}`),
+        url:createfileurl(file.filename,userId),
 
         uploadDate: uploadDate,
         fileSize: fileSize,

@@ -1,44 +1,27 @@
 const JWT = require('jsonwebtoken');
+require('dotenv').config();
 const createError = require('http-errors');
-const { promisify } = require('util');
 const redisClient = require('../config/redis');
 
-require('dotenv').config();
+verifyRefreshToken = (refreshToken) => {
+  return new Promise((resolve, reject) => {
+    JWT.verify(refreshToken, process.env.secretKey, async function (err, payload) {
+      if (err) return reject(createError.Unauthorized());
 
-const getAsync = promisify(redisClient.get).bind(redisClient);
+      const userId = payload.aud;
+      const storedToken = await redisClient.get(`token:${userId}`);
 
-const verifyRefreshToken = async (refreshToken) => {
-  try {
-    const payload = await new Promise((resolve, reject) => {
-      JWT.verify(refreshToken, process.env.secretKey, (err, decoded) => {
-        if (err) {
-            console.log(err)
-        //   reject(createError.Unauthorized());
-        } else {
-          resolve(decoded);
-        }
-      });
-    });
-
-    const userId = payload.aud;
-    console.log(userId);
-    try {
-        const storedToken = await getAsync(`token:${userId}`);
-        console.log('Stored Token:', storedToken);
-  
-        if (refreshToken === storedToken) {
-          return userId;
-        } else {
-          throw createError.Unauthorized();
-        }
-      } catch (redisError) {
-        console.error('Redis Error:', redisError);
-        throw createError.InternalServerError('Error fetching data from Redis');
+      if (!storedToken) {
+        return reject(createError.Unauthorized());
       }
-  } catch (error) {
-    console.error('Error:', error);
-    throw error;
-  }
+
+      if (storedToken === refreshToken) {
+        resolve(userId);
+      } else {
+        reject(createError.Unauthorized());
+      }
+    });
+  });
 };
 
 module.exports = verifyRefreshToken;

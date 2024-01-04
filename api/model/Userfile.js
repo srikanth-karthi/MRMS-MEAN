@@ -9,7 +9,7 @@ const fileSchema = new mongoose.Schema({
     type: String,
     required: true,
   },
-  token:
+  url:
   {
     type: String,
     required: true,
@@ -54,7 +54,7 @@ const folderSchema = new mongoose.Schema({
     type: String || Number,
     required: true,
   },
-  folders: [this], // Reference to the same schema type
+  folders: [this], 
   files: {
     type: [fileSchema],
     default: [],
@@ -79,7 +79,7 @@ const UserSchema = new mongoose.Schema({
   },
 });
 
-// Define User model
+
 const User = mongoose.model('User', UserSchema);
 
 module.exports = User;

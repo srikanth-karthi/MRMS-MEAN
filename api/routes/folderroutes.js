@@ -1,9 +1,9 @@
 const express = require('express');
 const router = express.Router();
 const verifyToken = require('../middleware/verifytoken'); 
-const {addFolderToUser,addfolertofolder,uploadfolder,uploadfoldertofolder}=require('../controller/newfolder');
+const {addFolderToUser,addfolertofolder,uploadfolder,uploadfoldertofolder}=require('../controller/folder');
 const fileUploadMiddleware = require('../middleware/fileUploadMiddleware');
-require('../controller/uploadfile');
+
 
 
 

@@ -8,10 +8,7 @@ import { User } from './model/usermodel';
 })
 
 export class ServicesService {
-  refreshToken() {
-   var a=  this.http.get(`/api/users/refreshtoken`, {});
-  console.log(a)
-return a;  }
+
   isenabledashboard: boolean = false;
   activefolder: any;
   folder: any = [];
@@ -23,14 +20,10 @@ return a;  }
   logout(): Observable<any> {
     return this.http.get(`/logout`);
   }
+  refreshToken() {
+    return this.http.get(`/api/users/refreshtoken`, {});
+     }
 
-  login(email: any, password: any): Observable<any> {
-    return this.http.post(`/api/users/login`, { email, password });
-  }
-
-  register(name: any, email: any, password: any): Observable<any> {
-    return this.http.post(`/api/users/register`, { name, email, password });
-  }
 
   userdata(): Observable<any> {
     return this.http.post(`/api/users/getprofile`, {});

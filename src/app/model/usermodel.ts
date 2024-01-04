@@ -4,6 +4,7 @@ export interface File {
   fileName: string;
   role: 'admin' | 'user' | 'hospital';
   uploadername: string | number;
+  url:string;
   fileType: string;
   fileSize: number;
   uploadDate: string;
