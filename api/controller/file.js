@@ -6,6 +6,7 @@ const decoder = require("../utils/decodetoken");
 
 
 const uploadfiles = async (req, res, next) => {
+  
   try {
     const { files } = req;
     const { folderpath, headfolder } = req.params;
