@@ -1,5 +1,5 @@
 const JWT = require('jsonwebtoken');
-require('dotenv').config();
+require('dotenv').config()
 const createError = require('http-errors');
 const redisClient = require('../config/redis');
 
