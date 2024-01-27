@@ -27,7 +27,7 @@ return  JWT.sign({ id: userId }, secretKey, { expiresIn: '1h' });
           });
       
 
-          client.SET(`token:${userId}`, token, 'EX', 365 * 24 * 60 * 60, (err, reply) => {
+          client.SET(`token:${userId}`, token, 'EX',  60 * 60, (err, reply) => {
             if (err) {
               console.error(err.message);
               throw createError.InternalServerError();

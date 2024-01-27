@@ -1,29 +1,29 @@
 const User = require("../model/Userfile");
 const createfileurl =require('../utils/namefiles')
-const sanitize = require('sanitize-filename');
-const addFolderToUser = async (req, res) => {
+const checkFolderExists = require('../utils/folder')
+const createError = require("http-errors");
+const addFolderToUser = async (req, res,next) => {
   try {
-
-    const folderName = req.body.foldername;
-
+    
     if (!req.decoded || !req.decoded.id) {
-      return res
-        .status(401)
-        .json({ message: "Unauthorized: Missing or invalid token" });
+      return next(createError.Unauthorized("Unauthorized: Missing or invalid token")) 
+    }
+    const folderName = req.body.foldername;
+    
+    if (!folderName || folderName.trim() === "") {
+      return next(createError.BadRequest("Folder name is required" )) 
     }
 
     const userId = req.decoded.id;
-
+    
+    
     let user = await User.findOne({ userId });
-
     if (!user) {
       user = new User({ userId });
     }
 
-    const existingFolder = user.folders.find(
-      (folder) => folder.name === folderName
-    );
-    if (existingFolder) {
+
+    if (checkFolderExists(user.folders, folderName)) {
       console.log("Folder with the same name already exists");
       return res.status(200).json({
         status: "samename",
@@ -31,9 +31,6 @@ const addFolderToUser = async (req, res) => {
       });
     }
 
-    if (!folderName || folderName.trim() === "") {
-      return res.status(400).json({ message: "Folder name is required" });
-    }
     const newFolder = { name: folderName,folders:[], files: [],role:'user', uploadername:userId
    };
     user.folders.push(newFolder);
@@ -90,10 +87,8 @@ const addfolertofolder = async (req, res) => {
       }
     }
 
-    const existingFolder = currentFolder.find(
-      (folder) => folder.name === newFolderName
-    );
-    if (existingFolder) {
+
+    if (checkFolderExists(currentFolder, newFolderName)) {
       console.log("Folder with the same name already exists");
       return res.status(200).json({
         status: "samename",
@@ -143,10 +138,8 @@ const uploadfolder = async (req, res) => {
     if (!user) {
       user = new User({ userId });
     }
-    const existingFolder = user.folders.find(
-      (folder) => folder.name === foldername
-    );
-    if (existingFolder) {
+
+    if (checkFolderExists(user.folders, foldername)) {
       console.log("Folder with the same name already exists");
       return res.status(200).json({
         status: "samename",
@@ -216,6 +209,14 @@ console.log(`head Folder '${headfolder}' not found`);
       return res.status(404).json({ message: `Folder '${folderName}' not found` });
     }
   }
+  
+  if (checkFolderExists( currentFolder.folders, foldername)) {
+    console.log("Folder with the same name already exists");
+    return res.status(200).json({
+      status: "samename",
+      message: "Folder with the same name already exists",
+    });
+  }
   const newFolder = {
     name: foldername,
     folders: [],
@@ -227,8 +228,8 @@ console.log(`head Folder '${headfolder}' not found`);
     const file = files[i];
     const date = new Date(); // Current date and time
 
-    const uploadDate = date.toLocaleString('en-US'); // Current date and time of upload
-      const fileSize = file.size; // File size in bytes
+    const uploadDate = date.toLocaleString('en-US'); 
+      const fileSize = file.size; 
       const fileType = file.mimetype;
       user.filesize=user.filesize+fileSize; 
       const timestamp = Date.now(); // MIME type of the file

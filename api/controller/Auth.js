@@ -43,8 +43,6 @@ var loginController = {
 
           } else {
             next( createError[400]('Password not valid'))
-       
-
           }
         });
       } else {
@@ -59,7 +57,6 @@ var loginController = {
     const email = req.body.email;
     console.log(req.body.password)
     const hashedpassword = await bcrypt.hash(req.body.password, 10);
-
     const checkQuery = `SELECT * FROM userdetails WHERE email = ?`;
     sqldb.query(checkQuery, [email], (error, results) => {
       if (error) next( createError.BadRequest(error))

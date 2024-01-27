@@ -84,6 +84,6 @@ app.use("*", (req, res) => {
   });
 });
 
-app.listen(`${process.env.port}`, () => {
+app.listen(`${process.env.port}`,'0.0.0.0', () => {
   console.log(`Server started on ${process.env.bacendurl}`);
 });

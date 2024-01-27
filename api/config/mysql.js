@@ -9,7 +9,7 @@ const sqldb = mysql.createConnection({
   });
   sqldb.connect((err) => {
     if (err) {
-      // console.error(err);
+      console.error(err);
     } else {
       console.log(" MYQL Connected !!");
     }
